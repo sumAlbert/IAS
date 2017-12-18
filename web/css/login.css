@@ -20,6 +20,8 @@ input {
 .main {
   margin: 0;
   padding: 0;
+  height: 100%;
+  width: 100%;
 }
 .mainHidden {
   display: none;
@@ -30,6 +32,9 @@ input {
   height: 100%;
   margin: 0 auto;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .mainDecorate {
   position: absolute;
@@ -185,12 +190,4 @@ input {
   background-size: 100% 100%;
   top: 70%;
   right: 10%;
-}
-@font-face {
-  font-family: hkpp;
-  src: url(../font/hkpp.ttf);
-}
-@font-face {
-  font-family: hkwwtjW5;
-  src: url(../font/hkwwtjW5.ttc);
 }
