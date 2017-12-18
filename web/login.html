@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width;maximum-scale=1.0;minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="css/IASfont.css">
     <link href="css/login.css" type="text/css" rel="stylesheet">
@@ -21,29 +21,29 @@
                 <div class="mainHeader-Right"></div>
             </div>
             <div class="mainChoice">
-                <span class="mainChoice-active">登陆</span>
+                <span class="mainChoice-active" id="login">登陆</span>
                 <span class="mainChoice-active">/</span>
-                <span class="mainChoice-inactive">注册</span>
+                <span class="mainChoice-inactive" id="register">注册</span>
             </div>
-            <div class="mainName">
-                <span class="mainName-prompt">name</span>
+            <div class="mainName mainContent-line">
+                <span class="mainName-prompt">Name</span>
                 <span class="mainName-input">
                     <input id="name"/>
                 </span>
             </div>
-            <div class="mainAccount">
-                <span class="mainAccount-prompt">email</span>
+            <div class="mainAccount mainContent-line">
+                <span class="mainAccount-prompt">Email</span>
                 <span class="mainAccount-input">
                     <input id="account"/>
                 </span>
             </div>
-            <div class="mainPw">
+            <div class="mainPw mainContent-line">
                 <span class="mainPw-prompt">Password</span>
                 <span class="mainPw-input">
                     <input id="pw"/>
                 </span>
             </div>
-            <div class="mainButton">
+            <div class="mainButton" id="submit">
                 确定
             </div>
         </div>

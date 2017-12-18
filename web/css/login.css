@@ -103,9 +103,11 @@ input {
 }
 .mainName {
   width: 100%;
-  height: 2em;
+  height: 2.8em;
   position: relative;
-  margin: 1% auto 0;
+  margin: .7em auto 0;
+  opacity: 0;
+  top: 0;
 }
 .mainName-prompt {
   width: 45%;
@@ -125,9 +127,10 @@ input {
 }
 .mainAccount {
   width: 100%;
-  height: 2em;
+  height: 2.8em;
   position: relative;
-  margin: 1.5em auto 0;
+  margin: .7em auto 0;
+  top: -2em;
 }
 .mainAccount-prompt {
   width: 45%;
@@ -147,9 +150,10 @@ input {
 }
 .mainPw {
   width: 100%;
-  height: 2em;
+  height: 2.8em;
   position: relative;
-  margin: 1.5em auto 0;
+  margin: .7em auto 0;
+  top: -2em;
 }
 .mainPw-prompt {
   width: 45%;
@@ -167,11 +171,22 @@ input {
   background: url("../image/login/u110.png") bottom center no-repeat;
   background-size: 100% 7px;
 }
+.mainContent-line:nth-child(1) {
+  margin: 1% auto 0;
+}
+.mainContent-line {
+  transition: all .3s;
+  position: relative;
+}
 #account {
   font-family: hkwwtjW5;
   font-size: 1.3em;
 }
 #pw {
+  font-family: hkwwtjW5;
+  font-size: 1.3em;
+}
+#name {
   font-family: hkwwtjW5;
   font-size: 1.3em;
 }
