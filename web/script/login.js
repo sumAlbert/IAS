@@ -58,13 +58,15 @@ document.getElementById("submit").addEventListener("click",function () {
         if(xhr.readyState===4){
             if(xhr.status===200){
                 console.log("success");
+                console.log(xhr.responseText);
+                console.log(JSON.parse(xhr.responseText));
             }
             else{
                 console.log("error");
             }
         }
     };
-    xhr.send("isLogin="+docData.isLogin+"&account="+account+"&pw="+pw+"&name="+name);
+    xhr.send("account="+account+"&pw="+pw+"&name="+name);
 });
 
 
