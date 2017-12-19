@@ -50,8 +50,32 @@ document.getElementById("submit").addEventListener("click",function () {
     var account=document.getElementById("account").value;
     var pw=document.getElementById("pw").value;
     var name=document.getElementById("name").value;
-    pw=hex_sha1(pw);
 
+    //检测输入是否符合规范
+    if(account.length===0){
+        toast("请输入账号");
+        return;
+    }
+    if(pw.length===0){
+        toast("请输入密码");
+        return;
+    }
+    if(!docData.isLogin){
+        if(name.length===0){
+            toast("请输入昵称");
+            return;
+        }
+    }
+    if(!isEmail(account)){
+        toast("账号格式错误，请输入正确的邮箱");
+        return;
+    }
+    if(pw.length<6){
+        toast("密码长度不小于6位数");
+        return;
+    }
+
+    pw=hex_sha1(pw);
     //ajax发送信息到后台
     if(docData.isLogin){
         var xhr=new XMLHttpRequest();
@@ -60,26 +84,35 @@ document.getElementById("submit").addEventListener("click",function () {
         xhr.onreadystatechange=function () {
             if(xhr.readyState===4){
                 if(xhr.status===200){
-                    console.log(JSON.parse(xhr.responseText).result);
+                    if(!JSON.parse(xhr.responseText).result){
+                        toast("账号或者密码错误~！");
+                    }
+                    else{
+                        window.location.href="./gameLobby.html";
+                    }
                 }
                 else{
-                    console.log("error");
+                    toast("网络连接问题~！")
                 }
             }
         };
         xhr.send("account="+account+"&pw="+pw+"&name="+name);
-    }
-    else{
+    }else{
         var xhr=new XMLHttpRequest();
         xhr.open("post","http://localhost:8080/Register");
         xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
         xhr.onreadystatechange=function () {
             if(xhr.readyState===4){
                 if(xhr.status===200){
-                    console.log(JSON.parse(xhr.responseText).result);
+                    if(!JSON.parse(xhr.responseText).result){
+                        toast("用户已存在，请重新注册~！");
+                    }
+                    else{
+                        window.location.href="./gameLobby.html";
+                    }
                 }
                 else{
-                    console.log("error");
+                    toast("网络连接问题")
                 }
             }
         };
@@ -103,11 +136,21 @@ var toast=function (info) {
     },0);
     setTimeout(function () {
         document.getElementById("mainContent-toastBox").style.cssText="display:block;opacity: 0;";
-        document.getElementById("mainContent-toastBox").children[0].innerHTML="Welcome";
     },1000);
     setTimeout(function () {
         document.getElementById("mainContent-toastBox").style.cssText="";
+        document.getElementById("mainContent-toastBox").children[0].innerHTML="Welcome";
     },1300);
+};
+
+/**
+ * 检测是否是Email格式
+ * @param str 待检测的Email
+ * @returns {boolean} 检测结果
+ */
+var isEmail=function (str) {
+    var reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+    return reg.test(str);
 };
 
 
