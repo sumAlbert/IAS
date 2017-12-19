@@ -44,6 +44,7 @@ input {
   display: none;
   opacity: 0;
   transition: all .3s;
+  font-family: hkwwtjW5;
 }
 .mainContent-toast {
   padding: .5em 2em;
