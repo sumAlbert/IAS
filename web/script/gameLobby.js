@@ -1,10 +1,12 @@
 var websocket = null;
+var docData={
+  currentPage:1
+};
 
 //判断当前浏览器是否支持WebSocket
 if('WebSocket' in window){
     websocket = new WebSocket("ws://localhost:8080/playGame");
-}
-else{
+} else{
     alert('Not support websocket');
 }
 
@@ -16,12 +18,13 @@ websocket.onerror = function(){
 
 //连接成功建立的回调方法
 websocket.onopen = function(event){
+    console.log(websocket.readyState);
     console.log("open");
 };
 
 //接收到消息的回调方法
 websocket.onmessage = function(){
-    console.log(event.data);
+    messageHandler(event.data)
 };
 
 //连接关闭的回调方法
@@ -36,15 +39,19 @@ window.onbeforeunload = function(){
     websocket.close();
 };
 
-//关闭连接
-function closeWebSocket(){
-    websocket.close();
+var messageHandler=function (data) {
+    console.log(data);
+};
+
+
+var mainTables=document.getElementsByClassName("mainTable");
+for(var i=0;i<7;i++){
+    (function (arg) {
+        mainTables[arg].addEventListener("click",function(){
+            websocket.send("commandId=0&currentPage="+docData.currentPage+"&tableId="+arg);
+        })
+    })(i)
 }
 
-//发送消息
-function send(){
-    console.log("123123");
-    websocket.send("test123");
 
-}
 
