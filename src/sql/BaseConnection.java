@@ -16,7 +16,7 @@ public class BaseConnection{
     private final static String USER="root";
     private final static String PASS="123456";
     private final static String DB_URL_PRE="jdbc:mysql://localhost:3306/";
-    private final static String DB_URL_AFT="?useUnicode=true&characterEncoding=UTF-8";
+    private final static String DB_URL_AFT="?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
     private Connection connection;
 
     public BaseConnection(String database){

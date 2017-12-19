@@ -24,7 +24,8 @@ public class UserSqlHandler implements SqlHandler {
         Connection connection=baseConnection.getConnection();
         try (Statement statement = connection.createStatement()) {
             String sqlStr = "insert into users values (\"" + user.getUserId() + "\",\"" + user.getNickname() + "\",\"" + user.getUserAccount() + "\",\"" + user.getPw() + "\")";
-            result = statement.execute(sqlStr);
+            statement.execute(sqlStr);
+            result=true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -54,7 +55,6 @@ public class UserSqlHandler implements SqlHandler {
                 String userId=resultSet.getString("userId");
                 user.setUserId(userId);
                 user.setNickname(nickname);
-                user.setPw("");
                 result=true;
             }
         } catch (SQLException e) {

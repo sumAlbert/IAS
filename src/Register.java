@@ -1,6 +1,7 @@
 
 
 import net.sf.json.JSONObject;
+import random.RandomHandler;
 import sql.BaseConnection;
 import sql.UserSqlHandler;
 import user.User;
@@ -16,7 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class Login extends HttpServlet {
+/**
+ * @author 98267
+ */
+public class Register extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         super.doGet(req, resp);
@@ -26,22 +30,31 @@ public class Login extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //预加载资源包括数据库链接和日志
         BaseConnection baseConnection=new BaseConnection("ias");
-        Logger logger=Logger.getLogger("LoginServlet");
+        Logger logger=Logger.getLogger("RegisterServlet");
         UserSqlHandler userSqlHandler=new UserSqlHandler(baseConnection);
+        RandomHandler randomHandler=new RandomHandler();
 
         //获取ajax传递的参数
         String account=req.getParameter("account");
         String pw=req.getParameter("pw");
+        String name=req.getParameter("name");
 
         //登录逻辑
         User user=new User();
         user.setUserAccount(account);
         user.setPw(pw);
+        user.setNickname(name);
 
-        boolean result=(boolean)userSqlHandler.selectSQL(user);
-        logger.info(String.valueOf(result));
-        HttpSession httpSession=req.getSession();
-        httpSession.setAttribute("user",user);
+        boolean result= false;
+        //判断注册的信息是否已经存在
+        if(!(boolean)userSqlHandler.selectSQL(user)){
+            user.setUserId("user"+randomHandler.getId(16));
+            result=userSqlHandler.insertSQL(user);
+            logger.info(String.valueOf(result));
+            HttpSession httpSession=req.getSession();
+            httpSession.setAttribute("user",user);
+            result=true;
+        }
 
         //将ajax需要的信息返回
         Map map=new HashMap(16);

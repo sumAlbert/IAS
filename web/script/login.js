@@ -46,27 +46,68 @@ document.getElementById("register").addEventListener("click",function () {
  * 发送按钮事件监听
  */
 document.getElementById("submit").addEventListener("click",function () {
-    //获取需要发送的信息
+    //获取需要发送的信息,密码经过sha1加密
     var account=document.getElementById("account").value;
     var pw=document.getElementById("pw").value;
     var name=document.getElementById("name").value;
+    pw=hex_sha1(pw);
+
     //ajax发送信息到后台
-    var xhr=new XMLHttpRequest();
-    xhr.open("post","http://localhost:8080/Login");
-    xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
-    xhr.onreadystatechange=function () {
-        if(xhr.readyState===4){
-            if(xhr.status===200){
-                console.log("success");
-                console.log(xhr.responseText);
-                console.log(JSON.parse(xhr.responseText));
+    if(docData.isLogin){
+        var xhr=new XMLHttpRequest();
+        xhr.open("post","http://localhost:8080/Login");
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
+        xhr.onreadystatechange=function () {
+            if(xhr.readyState===4){
+                if(xhr.status===200){
+                    console.log(JSON.parse(xhr.responseText).result);
+                }
+                else{
+                    console.log("error");
+                }
             }
-            else{
-                console.log("error");
+        };
+        xhr.send("account="+account+"&pw="+pw+"&name="+name);
+    }
+    else{
+        var xhr=new XMLHttpRequest();
+        xhr.open("post","http://localhost:8080/Register");
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
+        xhr.onreadystatechange=function () {
+            if(xhr.readyState===4){
+                if(xhr.status===200){
+                    console.log(JSON.parse(xhr.responseText).result);
+                }
+                else{
+                    console.log("error");
+                }
             }
-        }
-    };
-    xhr.send("account="+account+"&pw="+pw+"&name="+name);
+        };
+        xhr.send("&account="+account+"&pw="+pw+"&name="+name);
+    }
+
 });
+
+/**
+ * 弹出信息
+ * @param info 需要弹出的信息
+ */
+var toast=function (info) {
+    if(!info){
+        info="Welcome";
+    }
+    document.getElementById("mainContent-toastBox").style.cssText="display:block";
+    setTimeout(function () {
+        document.getElementById("mainContent-toastBox").style.cssText="display:block;opacity: 1;";
+        document.getElementById("mainContent-toastBox").children[0].innerHTML=info;
+    },0);
+    setTimeout(function () {
+        document.getElementById("mainContent-toastBox").style.cssText="display:block;opacity: 0;";
+        document.getElementById("mainContent-toastBox").children[0].innerHTML="Welcome";
+    },1000);
+    setTimeout(function () {
+        document.getElementById("mainContent-toastBox").style.cssText="";
+    },1300);
+};
 
 

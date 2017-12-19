@@ -36,6 +36,23 @@ input {
   flex-direction: column;
   justify-content: space-between;
 }
+.mainContent-toastBox {
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  bottom: 3em;
+  display: none;
+  opacity: 0;
+  transition: all .3s;
+}
+.mainContent-toast {
+  padding: .5em 2em;
+  background: rgba(51, 51, 51, 0.8);
+  color: white;
+  position: relative;
+  border-radius: .5em;
+  display: inline-block;
+}
 .mainDecorate {
   position: absolute;
   height: 100%;

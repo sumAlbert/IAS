@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/IASfont.css">
     <link href="css/login.css" type="text/css" rel="stylesheet">
 </head>
-<body>
+<body onload="toast()">
     <div class="main">
         <div class="mainContent">
             <div class="mainDecorate">
@@ -47,8 +47,12 @@
                 确定
             </div>
         </div>
+        <div class="mainContent-toastBox" id="mainContent-toastBox">
+            <div class="mainContent-toast">Welcome</div>
+        </div>
     </div>
     <div class="mainHidden"></div>
 </body>
+<script src="script/sha1.js"></script>
 <script src="script/login.js"></script>
 </html>
