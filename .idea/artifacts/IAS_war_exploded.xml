@@ -16,6 +16,8 @@
           <element id="file-copy" path="$PROJECT_DIR$/src/lib/json-lib-2.1-jdk15.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/src/lib/mysql-connector-java-5.1.39-bin.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/src/lib/servlet-api.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/src/lib/catalina.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/src/lib/websocket-api.jar" />
         </element>
       </element>
     </root>
