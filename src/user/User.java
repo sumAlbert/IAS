@@ -12,10 +12,8 @@ public class User {
     private String nickname="";
     private String userAccount="";
     private String pw="";
-    /**
-     * 用户的状态，1--进入大厅，2--进入房间，3--开始游戏
-     */
-    private int state=0;
+    public static final int USER_ID_LENGTH=20;
+
 
     public User(String nickname,String userAccount,String pw){
         super();

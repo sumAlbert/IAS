@@ -52,28 +52,28 @@ document.getElementById("submit").addEventListener("click",function () {
     var name=document.getElementById("name").value;
 
     //检测输入是否符合规范
-    if(account.length===0){
-        toast("请输入账号");
-        return;
-    }
-    if(pw.length===0){
-        toast("请输入密码");
-        return;
-    }
-    if(!docData.isLogin){
-        if(name.length===0){
-            toast("请输入昵称");
-            return;
-        }
-    }
-    if(!isEmail(account)){
-        toast("账号格式错误，请输入正确的邮箱");
-        return;
-    }
-    if(pw.length<6){
-        toast("密码长度不小于6位数");
-        return;
-    }
+    // if(account.length===0){
+    //     toast("请输入账号");
+    //     return;
+    // }
+    // if(pw.length===0){
+    //     toast("请输入密码");
+    //     return;
+    // }
+    // if(!docData.isLogin){
+    //     if(name.length===0){
+    //         toast("请输入昵称");
+    //         return;
+    //     }
+    // }
+    // if(!isEmail(account)){
+    //     toast("账号格式错误，请输入正确的邮箱");
+    //     return;
+    // }
+    // if(pw.length<6){
+    //     toast("密码长度不小于6位数");
+    //     return;
+    // }
 
     pw=hex_sha1(pw);
     //ajax发送信息到后台
@@ -152,5 +152,3 @@ var isEmail=function (str) {
     var reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
     return reg.test(str);
 };
-
-

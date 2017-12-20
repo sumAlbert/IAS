@@ -36,6 +36,24 @@ input {
   flex-direction: column;
   justify-content: space-between;
 }
+.mainContent-toastBox {
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  bottom: 3em;
+  display: none;
+  opacity: 0;
+  transition: all .3s;
+  font-family: hkwwtjW5;
+}
+.mainContent-toast {
+  padding: .5em 2em;
+  background: rgba(51, 51, 51, 0.8);
+  color: white;
+  position: relative;
+  border-radius: .5em;
+  display: inline-block;
+}
 .mainDecorate {
   position: absolute;
   height: 100%;
@@ -86,11 +104,49 @@ input {
   color: #333;
 }
 .mainTables {
-  width: 57.43em;
-  display: flex;
+  max-width: 57.43em;
+  width: 100%;
+  min-width: 50em;
   margin: 0 auto;
+  overflow: hidden;
+  height: 25em;
+  position: relative;
+}
+.mainTablePanel0 {
+  height: 25em;
+  max-width: 57.43em;
+  width: 100%;
+  min-width: 50em;
+  display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
+  position: absolute;
+  left: -100%;
+  transition: all ease-in-out 1s;
+}
+.mainTablePanel1 {
+  height: 25em;
+  max-width: 57.43em;
+  width: 100%;
+  min-width: 50em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  position: absolute;
+  left: 0;
+  transition: all ease-in-out 1s;
+}
+.mainTablePanel2 {
+  height: 25em;
+  max-width: 57.43em;
+  width: 100%;
+  min-width: 50em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  position: absolute;
+  left: 100%;
+  transition: all ease-in-out 1s;
 }
 .mainTable {
   width: 9.37em;
