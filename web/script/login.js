@@ -1,6 +1,7 @@
 var docData={
     isLogin:true
 };
+var URL="192.168.1.104";
 
 /**
  * 登录按钮事件监听
@@ -79,7 +80,7 @@ document.getElementById("submit").addEventListener("click",function () {
     //ajax发送信息到后台
     if(docData.isLogin){
         var xhr=new XMLHttpRequest();
-        xhr.open("post","http://localhost:8080/Login");
+        xhr.open("post","http://"+URL+":8080/Login");
         xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
         xhr.onreadystatechange=function () {
             if(xhr.readyState===4){
@@ -88,7 +89,7 @@ document.getElementById("submit").addEventListener("click",function () {
                         toast("账号或者密码错误~！");
                     }
                     else{
-                        window.location.href="./gameLobby.html";
+                        window.location.href="http://"+URL+":8080/gameLobby.html";
                     }
                 }
                 else{
@@ -99,7 +100,7 @@ document.getElementById("submit").addEventListener("click",function () {
         xhr.send("account="+account+"&pw="+pw+"&name="+name);
     }else{
         var xhr=new XMLHttpRequest();
-        xhr.open("post","http://localhost:8080/Register");
+        xhr.open("post","http://"+URL+":8080/Register");
         xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
         xhr.onreadystatechange=function () {
             if(xhr.readyState===4){
@@ -108,7 +109,7 @@ document.getElementById("submit").addEventListener("click",function () {
                         toast("用户已存在，请重新注册~！");
                     }
                     else{
-                        window.location.href="./gameLobby.html";
+                        window.location.href="http://"+URL+":8080/gameLobby.html";
                     }
                 }
                 else{

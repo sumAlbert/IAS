@@ -121,7 +121,7 @@ input {
   flex-wrap: wrap;
   justify-content: space-around;
   position: absolute;
-  left: -100%;
+  left: 0;
   transition: all ease-in-out 1s;
 }
 .mainTablePanel1 {
@@ -133,7 +133,7 @@ input {
   flex-wrap: wrap;
   justify-content: space-around;
   position: absolute;
-  left: 0;
+  left: 100%;
   transition: all ease-in-out 1s;
 }
 .mainTablePanel2 {
@@ -186,6 +186,7 @@ input {
   justify-content: center;
   align-items: center;
   margin: 3.5em 0;
+  user-select: none;
 }
 .mainPage-normalPage {
   text-align: center;
