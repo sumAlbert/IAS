@@ -194,6 +194,8 @@ var init=function () {
             })
         })(i)
     }
+
+    //初始化已经登陆的session
     websocket.send("{\"command\":\"init\",\"position\":\"gameLobby\"}");
 
     /**

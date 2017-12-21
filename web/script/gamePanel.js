@@ -1,3 +1,4 @@
+//全局变量
 var cartoonPersonPosition={'4':[
     [1,2,3,2,5,2,7,2],
     [8.7,0,10.7,0,12.7,0,14.7,0],
@@ -43,3 +44,145 @@ var cartoonPersonPosition={'4':[
     [10.6,8.7],
     [3.8,10.2]
 ]};
+var websocket = null;
+var docData={
+    roomIdError:999999,
+    maxMemberPerRoom: 4
+};
+var URL="192.168.1.104";
+
+//判断当前浏览器是否支持WebSocket
+if('WebSocket' in window){
+    websocket = new WebSocket("ws://"+URL+":8080/playGame");
+} else{
+    alert('Not support websocket');
+}
+
+
+/**
+ * 监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+ */
+window.onbeforeunload = function(){
+    websocket.close();
+};
+
+//连接发生错误的回调方法
+websocket.onerror = function(){
+    exitHandler();
+};
+
+//连接成功建立的回调方法
+websocket.onopen = function(){
+    init();
+};
+
+//接收到消息的回调方法
+websocket.onmessage = function(event){
+    messageController(event.data)
+};
+
+//连接关闭的回调方法
+websocket.onclose = function(){
+    console.log("close");
+};
+
+/**
+ * websocket处理相应事件控制器
+ * @param data
+ */
+var messageController=function (data) {
+    var JSONObject=JSON.parse(data);
+    switch (JSONObject["commandBack"]){
+        case "exit":{
+            exitHandler();
+            break;
+        }
+        case "upgradeMember":{
+            upgradeMember(JSONObject);
+            break;
+        }
+        case "backToLobby":{
+            backToLobby();
+            break;
+        }
+        case "roomFull":{
+            toast("房间已满");
+            backToLobby();
+            break;
+        }
+        default:
+            break;
+    }
+};
+
+/**
+ * 处理页面退出的函数
+ */
+var exitHandler=function () {
+    toast("未登陆，请重新登陆~");
+    setTimeout(function () {
+        window.location.href="http://"+URL+":8080/login.html";
+    },2000);
+};
+
+//view控制
+/**
+ * 弹出信息
+ * @param info 需要弹出的信息
+ */
+var toast=function (info) {
+    if(!info){
+        info="Welcome";
+    }
+    document.getElementById("mainContent-toastBox").style.cssText="display:block";
+    setTimeout(function () {
+        document.getElementById("mainContent-toastBox").style.cssText="display:block;opacity: 1;";
+        document.getElementById("mainContent-toastBox").children[0].innerHTML=info;
+    },0);
+    setTimeout(function () {
+        document.getElementById("mainContent-toastBox").style.cssText="display:block;opacity: 0;";
+    },1000);
+    setTimeout(function () {
+        document.getElementById("mainContent-toastBox").style.cssText="";
+        document.getElementById("mainContent-toastBox").children[0].innerHTML="Welcome";
+    },1300);
+};
+/**
+ * 初始化
+ */
+var init=function () {
+    //初始化已经进入房间的session
+    var tableId=window.location.search.substr(1);
+    if(!tableId){
+        tableId=docData.roomIdError;
+    }
+    websocket.send("{\"command\":\"init\",\"position\":\"gamePanel\",\"tableId\":"+tableId+"}");
+
+    //退出当前房间
+    document.getElementById("back").addEventListener("click",function () {
+        websocket.send("{\"command\":\"backToLobby\",\"tableId\":\""+tableId+"\"}");
+    });
+
+};
+/**
+ * 处理成员数据更新
+ */
+var upgradeMember=function (JSONObject) {
+    console.log(JSONObject);
+    for(var i=0;i<docData.maxMemberPerRoom;i++){
+        document.getElementsByClassName("mainRanking-player")[i].style.cssText="display:none";
+    }
+    JSONObject.data.forEach(function (t,index) {
+        document.getElementsByClassName("mainRanking-player")[index].style.cssText="";
+        document.getElementsByClassName("mainRanking-player")[index].children[0].innerHTML="•"+t;
+    })
+};
+/**
+ * 当点击退出按钮以后
+ */
+var backToLobby=function () {
+    setTimeout(function () {
+        window.location.href="http://"+URL+":8080/gameLobby.html";
+    },1000);
+};
+

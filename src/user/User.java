@@ -8,10 +8,16 @@ import java.util.Calendar;
  * @author 98267
  */
 public class User {
+
+    public static final int CURRENTPAGE_LOBBY=0;
+    public static final int CURRENTPAGE_PANEL=1;
     private String userId="";
     private String nickname="";
     private String userAccount="";
     private String pw="";
+
+    private int tableId=0;
+    private int playGameCurrentPage=CURRENTPAGE_LOBBY;
     public static final int USER_ID_LENGTH=20;
 
 
@@ -37,6 +43,12 @@ public class User {
     public String getUserId() {
         return userId;
     }
+    public int getPlayGameCurrentPage() {
+        return playGameCurrentPage;
+    }
+    public int getTableId() {
+        return tableId;
+    }
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
@@ -49,5 +61,11 @@ public class User {
     }
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+    public void setPlayGameCurrentPage(int playGameCurrentPage) {
+        this.playGameCurrentPage = playGameCurrentPage;
+    }
+    public void setTableId(int tableId) {
+        this.tableId = tableId;
     }
 }

@@ -50,7 +50,6 @@ public class PlayGame {
         }
     }
 
-
     @OnMessage
     public void onMessage(Session session, String msg){
         System.out.println(session.getId()+": message");
@@ -63,7 +62,11 @@ public class PlayGame {
                 break;
             }
             case "enterRoom":{
-                if(enterRoom(session,jsonObjectReceive)){
+                enterRoom(session,jsonObjectReceive);
+                break;
+            }
+            case "backToLobby":{
+                if(backToLobby(session,jsonObjectReceive)){
                     sendInfoAllLobby("updateTableInfo");
                 }
                 break;
@@ -107,17 +110,33 @@ public class PlayGame {
 
     @OnError
     public void onError(Session session, Throwable throwable){
-        System.out.println(session.getId()+": error");
-        sessions.remove(session.getId());
-        users.remove(session.getId());
+        System.out.println(session.getId()+" error");
     }
 
     @OnClose
     public void onClose(Session session, CloseReason reason){
-        leaveGameLobby(session.getId());
-        sessions.remove(session.getId());
-        users.remove(session.getId());
-        System.out.println(session.getId()+": close;当前在线人数:"+sessions.size());
+        User user=users.get(session.getId());
+        if(user!=null){
+            switch (user.getPlayGameCurrentPage()){
+                case User.CURRENTPAGE_LOBBY:{
+                    leaveGameLobby(session.getId());
+                    sessions.remove(session.getId());
+                    users.remove(session.getId());
+                    System.out.println(session.getId()+": close;Lobby;当前在线人数:"+sessions.size());
+                    break;
+                }
+                case User.CURRENTPAGE_PANEL:{
+                    tables.get(user.getTableId()).getEnterSession().remove(session);
+                    tables.get(user.getTableId()).getPrepareSession().remove(session);
+                    sessions.remove(session.getId());
+                    users.remove(session.getId());
+                    System.out.println(session.getId()+": close;Panel");
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
     }
 
     /**
@@ -131,6 +150,8 @@ public class PlayGame {
         String position=jsonObject.getString("position");
         switch (position){
             case "gameLobby":{
+                //设置user访问的状态
+                users.get(session.getId()).setPlayGameCurrentPage(User.CURRENTPAGE_LOBBY);
                 gameLobbys.add(session.getId());
                 List<String> backResultList=new ArrayList<>();
                 Map backResultMap=new HashMap<>(16);
@@ -146,6 +167,52 @@ public class PlayGame {
                     session.getBasicRemote().sendText(backResultJson.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+                break;
+            }
+            case "gamePanel":{
+                int tableId=jsonObject.getInt("tableId");
+                if(tableId==Table.ERROR_ID){
+                    break;
+                }
+                users.get(session.getId()).setPlayGameCurrentPage(User.CURRENTPAGE_PANEL);
+                users.get(session.getId()).setTableId(tableId);
+                Table table=tables.get(tableId);
+                if(!table.userIdExisted(users.get(session.getId()).getUserId())){
+                    try {
+                        session.getBasicRemote().sendText("{\"commandBack\":\"roomFull\"}");
+                        break;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(!table.enterRoom(session)){
+                    try {
+                        session.getBasicRemote().sendText("{\"commandBack\":\"backToLobby\"}");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    List enterSession=table.getEnterSession();
+                    ArrayList backResultList=new ArrayList();
+                    Map backResultMap=new HashMap(16);
+                    for(int i=0;i<enterSession.size();i++){
+                        Session sessionInTable= (Session) enterSession.get(i);
+                        User user=users.get(sessionInTable.getId());
+                        String nickName=user.getNickname();
+                        backResultList.add(nickName);
+                    }
+                    backResultMap.put("commandBack","upgradeMember");
+                    backResultMap.put("data",backResultList);
+                    JSONObject backResultJson=JSONObject.fromObject(backResultMap);
+                    try {
+                        session.getBasicRemote().sendText(backResultJson.toString());
+                        sendInfoAllLobby("updateTableInfo");
+                        sendInfoAllTable(tableId,"updateMemberInfo",backResultJson.toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             }
@@ -168,8 +235,9 @@ public class PlayGame {
         Map backResultMap=new HashMap<>(16);
         backResultMap.put("commandBack","enterRoom");
         backResultMap.put("tableId",tableId);
-        if(table.enterRoom(session)){
+        if(table.getEnterSession().size()<Table.MAX_POSITION){
             System.out.println(session.getId()+" : 加入成功");
+            table.getEnterUserId().add(users.get(session.getId()).getUserId());
             backResultMap.put("enterRoomResult",true);
             leaveGameLobby(session.getId());
             result=true;
@@ -207,7 +275,7 @@ public class PlayGame {
     /**
      * 发送给所有在大厅的人员的信息
      * @param type 发送给所有在大厅的人员的信息种类
-     * @return 返回是否没有错误地成功发送给所有同学
+     * @return 返回是否没有错误地成功发送给所有用户
      */
     private static synchronized boolean sendInfoAllLobby(String type){
         boolean result=false;
@@ -229,6 +297,77 @@ public class PlayGame {
                         String sessionId=gameLobbys.get(i);
                         Session session=sessions.get(sessionId);
                         session.getBasicRemote().sendText(backResultJson.toString());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            default:
+                break;
+        }
+        return result;
+    }
+
+    /**
+     * 将已经登陆的session回到大厅
+     * @param session 需要回到大厅的session
+     * @param jsonObject 前端传递过来的参数转化成的JSONObject
+     * @return 是否没有问题的回到大厅
+     */
+    private static synchronized boolean backToLobby(Session session,JSONObject jsonObject){
+        //将离开信息发送给离开的session
+        boolean result=false;
+        int tableId=jsonObject.getInt("tableId");
+        Table table=tables.get(tableId);
+        Map backResultMap=new HashMap<>(16);
+        backResultMap.put("commandBack","backToLobby");
+        if(table.leaveRoom(session)){
+            System.out.println(session.getId()+" : 离开成功");
+            backResultMap.put("backToLobby",true);
+            result=true;
+        }
+        JSONObject backResultJson=JSONObject.fromObject(backResultMap);
+        try {
+            session.getBasicRemote().sendText(backResultJson.toString());
+
+            //将离开信息发送给所有在桌子内的玩家
+            ArrayList backResultList=new ArrayList();
+            backResultMap=new HashMap(16);
+            List enterSession=table.getEnterSession();
+            for(int i=0;i<enterSession.size();i++){
+                Session sessionInTable= (Session) enterSession.get(i);
+                User user=users.get(sessionInTable.getId());
+                String nickName=user.getNickname();
+                backResultList.add(nickName);
+            }
+            backResultMap.put("commandBack","upgradeMember");
+            backResultMap.put("data",backResultList);
+            backResultJson=JSONObject.fromObject(backResultMap);
+            sendInfoAllTable(tableId,"updateMemberInfo",backResultJson.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 发送给所有在游戏桌内的人员的信息
+     * @param tableId 发送的游戏桌号码
+     * @param type 发送给所有在游戏桌内的人员的信息种类
+     * @param attachment 附带的信息
+     * @return 返回是否没有错误地成功发送给所有用户
+     */
+    private static synchronized boolean sendInfoAllTable(int tableId,String type,String attachment){
+        boolean result=false;
+        switch (type){
+            case "updateMemberInfo":{
+                try {
+                    if(attachment!=null){
+                        for(int i=0;i<tables.get(tableId).getEnterSession().size();i++){
+                            Session session=(Session)tables.get(tableId).getEnterSession().get(i);
+                            session.getBasicRemote().sendText(attachment);
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
