@@ -17,6 +17,7 @@ public class User {
     private String pw="";
 
     private int tableId=0;
+    private int positionId=0;
     private int playGameCurrentPage=CURRENTPAGE_LOBBY;
     public static final int USER_ID_LENGTH=20;
 
@@ -48,6 +49,12 @@ public class User {
     }
     public int getTableId() {
         return tableId;
+    }
+    public int getPositionId() {
+        return positionId;
+    }
+    public void setPositionId(int positionId) {
+        this.positionId = positionId;
     }
 
     public void setNickname(String nickname) {

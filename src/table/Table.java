@@ -34,7 +34,6 @@ public class Table {
      * 加入的客户端
      */
     private List enterSession=new ArrayList<Session>();
-
     /**
      * 登录到该房间的user,用于用户刷新页面
      */
@@ -91,14 +90,15 @@ public class Table {
      * @param session 准备离开房间的session
      * @return 是否没有错误的离开房间
      */
-    public boolean leaveRoom(Session session){
+    public boolean leaveRoom(Session session,String userId){
         boolean result=this.enterSession.remove(session);
+        this.prepareSession.remove(session);
+        this.enterUserId.remove(userId);
         if(enterSession.size()==0) {
             this.state = Table.STATE_EMPTY;
         }
         return result;
     }
-
     /**
      * 判断UserId是否存在
      * @param userId 判断的UserId
@@ -113,7 +113,6 @@ public class Table {
         }
         return result;
     }
-
     /**
      * 判断session是否存在
      * @param session 判断的session

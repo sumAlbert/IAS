@@ -47,9 +47,12 @@ var cartoonPersonPosition={'4':[
 var websocket = null;
 var docData={
     roomIdError:999999,
-    maxMemberPerRoom: 4
+    maxMemberPerRoom: 4,
+    currentPoint: 2,
+    positionId: 0
 };
-var URL="192.168.1.104";
+var URL="192.168.1.102";
+// var URL="localhost";
 
 //判断当前浏览器是否支持WebSocket
 if('WebSocket' in window){
@@ -120,9 +123,9 @@ var messageController=function (data) {
  */
 var exitHandler=function () {
     toast("未登陆，请重新登陆~");
-    setTimeout(function () {
-        window.location.href="http://"+URL+":8080/login.html";
-    },2000);
+    // setTimeout(function () {
+    //     window.location.href="http://"+URL+":8080/login.html";
+    // },2000);
 };
 
 //view控制
@@ -175,7 +178,9 @@ var upgradeMember=function (JSONObject) {
     JSONObject.data.forEach(function (t,index) {
         document.getElementsByClassName("mainRanking-player")[index].style.cssText="";
         document.getElementsByClassName("mainRanking-player")[index].children[0].innerHTML="•"+t;
-    })
+    });
+    docData.positionId=JSONObject.positionId;
+    console.log("positionId:"+docData.positionId);
 };
 /**
  * 当点击退出按钮以后
@@ -185,4 +190,5 @@ var backToLobby=function () {
         window.location.href="http://"+URL+":8080/gameLobby.html";
     },1000);
 };
+
 

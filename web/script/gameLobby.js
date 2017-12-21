@@ -9,7 +9,8 @@ var docData={
     tableIsChanging: false,
     tableInfo:[]
 };
-var URL="192.168.1.104";
+var URL="192.168.1.102";
+// var URL="localhost";
 
 //判断当前浏览器是否支持WebSocket
 if('WebSocket' in window){
@@ -219,6 +220,9 @@ var init=function () {
             if(docData.currentPage>=2){
                 turnPage(docData.currentPage-1);
             }
+            else{
+                docData.tableIsChanging=false;
+            }
         }
     });
     document.getElementsByClassName("mainPage-Right")[0].addEventListener("click",function () {
@@ -227,9 +231,11 @@ var init=function () {
             if(docData.currentPage<docData.maxPage){
                 turnPage(docData.currentPage+1);
             }
+            else{
+                docData.tableIsChanging=false;
+            }
         }
     });
-
 };
 /**
  * 更新当前页面

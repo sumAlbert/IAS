@@ -126,6 +126,25 @@ public class PlayGame {
                     break;
                 }
                 case User.CURRENTPAGE_PANEL:{
+                    //当用户错误的关闭当前页面的时候
+                    if(user.getTableId()!=Table.ERROR_ID){
+                        tables.get(user.getTableId()).leaveRoom(session,user.getUserId());
+                        //将离开信息发送给所有在桌子内的玩家
+                        ArrayList backResultList=new ArrayList();
+                        Map backResultMap=new HashMap(16);
+                        List enterSession=tables.get(user.getTableId()).getEnterSession();
+                        for(int i=0;i<enterSession.size();i++){
+                            Session sessionInTable= (Session) enterSession.get(i);
+                            user=users.get(sessionInTable.getId());
+                            String nickName=user.getNickname();
+                            backResultList.add(nickName);
+                        }
+                        backResultMap.put("commandBack","upgradeMember");
+                        backResultMap.put("data",backResultList);
+                        JSONObject backResultJson=JSONObject.fromObject(backResultMap);
+                        sendInfoAllLobby("updateTableInfo");
+                        sendInfoAllTable(user.getTableId(),"updateMemberInfo",backResultJson.toString());
+                    }
                     tables.get(user.getTableId()).getEnterSession().remove(session);
                     tables.get(user.getTableId()).getPrepareSession().remove(session);
                     sessions.remove(session.getId());
@@ -172,12 +191,19 @@ public class PlayGame {
             }
             case "gamePanel":{
                 int tableId=jsonObject.getInt("tableId");
+                //当tableId不符合规范的时候
                 if(tableId==Table.ERROR_ID){
+                    try {
+                        session.getBasicRemote().sendText("{\"commandBack\":\"backToLobby\"}");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 }
                 users.get(session.getId()).setPlayGameCurrentPage(User.CURRENTPAGE_PANEL);
                 users.get(session.getId()).setTableId(tableId);
                 Table table=tables.get(tableId);
+                //当table中没有加入的userId
                 if(!table.userIdExisted(users.get(session.getId()).getUserId())){
                     try {
                         session.getBasicRemote().sendText("{\"commandBack\":\"roomFull\"}");
@@ -322,8 +348,9 @@ public class PlayGame {
         Table table=tables.get(tableId);
         Map backResultMap=new HashMap<>(16);
         backResultMap.put("commandBack","backToLobby");
-        if(table.leaveRoom(session)){
+        if(table.leaveRoom(session,users.get(session.getId()).getUserId())){
             System.out.println(session.getId()+" : 离开成功");
+            users.get(session.getId()).setTableId(Table.ERROR_ID);
             backResultMap.put("backToLobby",true);
             result=true;
         }

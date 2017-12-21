@@ -1,7 +1,8 @@
 var docData={
     isLogin:true
 };
-var URL="192.168.1.104";
+var URL="192.168.1.102";
+// var URL="localhost";
 
 /**
  * 登录按钮事件监听

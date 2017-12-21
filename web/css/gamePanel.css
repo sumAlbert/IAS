@@ -227,6 +227,7 @@ input {
   font-family: hkpp;
   font-size: 1.3em;
   font-weight: 700;
+  transition: all 1s;
 }
 .mainBlackHouse-control {
   position: absolute;
@@ -365,6 +366,7 @@ input {
   width: 13.5em;
   background: url("../image/gamePanel/u3.png") center center no-repeat;
   background-size: 100% 100%;
+  cursor: pointer;
 }
 .mainResults-tracks {
   height: 13.5em;
@@ -489,24 +491,24 @@ input {
 .mainResults-personRed {
   background: url("../image/gamePanel/u25.png") center center no-repeat;
   background-size: 100% 100%;
-  left: 9.5em;
-  top: 0em;
+  left: 1em;
+  top: 2em;
 }
 .mainResults-personYellow {
   background: url("../image/gamePanel/u29.png") center center no-repeat;
   background-size: 82% 100%;
-  left: 11.5em;
-  top: 0em;
+  left: 3em;
+  top: 2em;
 }
 .mainResults-personGreen {
   background: url("../image/gamePanel/u31.png") center center no-repeat;
   background-size: 70% 100%;
-  left: 13.5em;
-  top: 0em;
+  left: 5em;
+  top: 2em;
 }
 .mainResults-personBlue {
   background: url("../image/gamePanel/u27.png") center center no-repeat;
   background-size: 78% 100%;
-  left: 0em;
-  top: 0em;
+  left: 7em;
+  top: 2em;
 }
