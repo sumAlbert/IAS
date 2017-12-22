@@ -129,21 +129,8 @@ public class PlayGame {
                     //当用户错误的关闭当前页面的时候
                     if(user.getTableId()!=Table.ERROR_ID){
                         tables.get(user.getTableId()).leaveRoom(session,user.getUserId());
-                        //将离开信息发送给所有在桌子内的玩家
-                        ArrayList backResultList=new ArrayList();
-                        Map backResultMap=new HashMap(16);
-                        List enterSession=tables.get(user.getTableId()).getEnterSession();
-                        for(int i=0;i<enterSession.size();i++){
-                            Session sessionInTable= (Session) enterSession.get(i);
-                            user=users.get(sessionInTable.getId());
-                            String nickName=user.getNickname();
-                            backResultList.add(nickName);
-                        }
-                        backResultMap.put("commandBack","upgradeMember");
-                        backResultMap.put("data",backResultList);
-                        JSONObject backResultJson=JSONObject.fromObject(backResultMap);
                         sendInfoAllLobby("updateTableInfo");
-                        sendInfoAllTable(user.getTableId(),"updateMemberInfo",backResultJson.toString());
+                        sendUpgradeMember(user.getTableId());
                     }
                     tables.get(user.getTableId()).getEnterSession().remove(session);
                     tables.get(user.getTableId()).getPrepareSession().remove(session);
@@ -220,25 +207,8 @@ public class PlayGame {
                     }
                 }
                 else{
-                    List enterSession=table.getEnterSession();
-                    ArrayList backResultList=new ArrayList();
-                    Map backResultMap=new HashMap(16);
-                    for(int i=0;i<enterSession.size();i++){
-                        Session sessionInTable= (Session) enterSession.get(i);
-                        User user=users.get(sessionInTable.getId());
-                        String nickName=user.getNickname();
-                        backResultList.add(nickName);
-                    }
-                    backResultMap.put("commandBack","upgradeMember");
-                    backResultMap.put("data",backResultList);
-                    JSONObject backResultJson=JSONObject.fromObject(backResultMap);
-                    try {
-                        session.getBasicRemote().sendText(backResultJson.toString());
-                        sendInfoAllLobby("updateTableInfo");
-                        sendInfoAllTable(tableId,"updateMemberInfo",backResultJson.toString());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    sendInfoAllLobby("updateTableInfo");
+                    sendUpgradeMember(tableId);
                 }
                 break;
             }
@@ -357,21 +327,7 @@ public class PlayGame {
         JSONObject backResultJson=JSONObject.fromObject(backResultMap);
         try {
             session.getBasicRemote().sendText(backResultJson.toString());
-
-            //将离开信息发送给所有在桌子内的玩家
-            ArrayList backResultList=new ArrayList();
-            backResultMap=new HashMap(16);
-            List enterSession=table.getEnterSession();
-            for(int i=0;i<enterSession.size();i++){
-                Session sessionInTable= (Session) enterSession.get(i);
-                User user=users.get(sessionInTable.getId());
-                String nickName=user.getNickname();
-                backResultList.add(nickName);
-            }
-            backResultMap.put("commandBack","upgradeMember");
-            backResultMap.put("data",backResultList);
-            backResultJson=JSONObject.fromObject(backResultMap);
-            sendInfoAllTable(tableId,"updateMemberInfo",backResultJson.toString());
+            sendUpgradeMember(tableId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -403,6 +359,46 @@ public class PlayGame {
             }
             default:
                 break;
+        }
+        return result;
+    }
+
+    /**
+     * 将table更新好的成员发送给table内部的所有成员
+     * @param tableId
+     * @return
+     */
+    private static synchronized boolean sendUpgradeMember(int tableId){
+        boolean result;
+        Table table=tables.get(tableId);
+        List enterSession=table.getEnterSession();
+        //将离开信息发送给所有在桌子内的玩家
+        ArrayList backResultList=new ArrayList();
+        ArrayList backResultListId=new ArrayList();
+        HashMap backResultMap=new HashMap(16);
+        for(int i=0;i<enterSession.size();i++){
+            Session sessionInTable= (Session) enterSession.get(i);
+            User user=users.get(sessionInTable.getId());
+            String nickName=user.getNickname();
+            String id=user.getUserId();
+            backResultList.add(nickName);
+            backResultListId.add(id);
+        }
+        backResultMap.put("commandBack","upgradeMember");
+        backResultMap.put("data",backResultList);
+        backResultMap.put("ids",backResultListId);
+        JSONObject backResultJson=JSONObject.fromObject(backResultMap);
+        result=sendInfoAllTable(tableId,"updateMemberInfo",backResultJson.toString());
+        //发送每个session单独的sessionId
+        try {
+            for(int i=0;i<enterSession.size();i++){
+                Session sessionInTable= (Session) enterSession.get(i);
+                User user=users.get(sessionInTable.getId());
+                String id=user.getUserId();
+            sessionInTable.getBasicRemote().sendText("{\"commandBack\":\"setUserId\",\"data\":\""+id+"\"}");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return result;
     }

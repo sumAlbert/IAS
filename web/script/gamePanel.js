@@ -49,7 +49,8 @@ var docData={
     roomIdError:999999,
     maxMemberPerRoom: 4,
     currentPoint: 2,
-    positionId: 0
+    roomUserIds:[],
+    roomUserId:""
 };
 var URL="192.168.1.102";
 // var URL="localhost";
@@ -111,6 +112,10 @@ var messageController=function (data) {
         case "roomFull":{
             toast("房间已满");
             backToLobby();
+            break;
+        }
+        case "setUserId":{
+            settingUserId(JSONObject);
             break;
         }
         default:
@@ -179,8 +184,14 @@ var upgradeMember=function (JSONObject) {
         document.getElementsByClassName("mainRanking-player")[index].style.cssText="";
         document.getElementsByClassName("mainRanking-player")[index].children[0].innerHTML="•"+t;
     });
-    docData.positionId=JSONObject.positionId;
-    console.log("positionId:"+docData.positionId);
+    docData.roomUserIds=JSONObject["ids"];
+};
+/**
+ * 处理成员数据更新
+ */
+var settingUserId=function (JSONObject) {
+    docData.roomUserId=JSONObject["data"];
+    console.log(docData);
 };
 /**
  * 当点击退出按钮以后
