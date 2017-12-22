@@ -176,7 +176,6 @@ var init=function () {
  * 处理成员数据更新
  */
 var upgradeMember=function (JSONObject) {
-    console.log(JSONObject);
     for(var i=0;i<docData.maxMemberPerRoom;i++){
         document.getElementsByClassName("mainRanking-player")[i].style.cssText="display:none";
     }
@@ -185,13 +184,13 @@ var upgradeMember=function (JSONObject) {
         document.getElementsByClassName("mainRanking-player")[index].children[0].innerHTML="•"+t;
     });
     docData.roomUserIds=JSONObject["ids"];
+    console.log(docData);
 };
 /**
  * 处理成员数据更新
  */
 var settingUserId=function (JSONObject) {
     docData.roomUserId=JSONObject["data"];
-    console.log(docData);
 };
 /**
  * 当点击退出按钮以后
