@@ -43,6 +43,8 @@ public class PlayGame {
      */
     private static List<String> gameLobbys=new ArrayList<>();
 
+    private static Map<String,Integer> offLineUserIds=new HashMap<>();
+
     public PlayGame(){
         for(int i=tables.size();i<MAX_PAGES*MAX_TABLES_PER;i++){
             Table table=new Table();
@@ -132,11 +134,19 @@ public class PlayGame {
                         sendInfoAllLobby("updateTableInfo");
                         sendUpgradeMember(user.getTableId());
                     }
-                    tables.get(user.getTableId()).getEnterSession().remove(session);
-                    tables.get(user.getTableId()).getPrepareSession().remove(session);
-                    sessions.remove(session.getId());
-                    users.remove(session.getId());
-                    System.out.println(session.getId()+": close;Panel");
+                    //判断游戏是否开始
+                    if(tables.get(user.getTableId()).isGameStart()){
+                        //如果游戏已经开始
+                        offLineUserIds.put(user.getUserId(),user.getTableId());
+                    }
+                    else{
+                        //如果游戏没有开始
+                        tables.get(user.getTableId()).getEnterSession().remove(session);
+                        tables.get(user.getTableId()).getPrepareSession().remove(session);
+                        sessions.remove(session.getId());
+                        users.remove(session.getId());
+                        System.out.println(session.getId()+": close;Panel");
+                    }
                     break;
                 }
                 default:
@@ -402,4 +412,8 @@ public class PlayGame {
         }
         return result;
     }
+
+    /**
+     *
+     */
 }

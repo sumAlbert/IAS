@@ -45,12 +45,18 @@ var cartoonPersonPosition={'4':[
     [3.8,10.2]
 ]};
 var websocket = null;
-var docData={
+var docData= {
     roomIdError:999999,
     maxMemberPerRoom: 4,
     currentPoint: 2,
     roomUserIds:[],
-    roomUserId:""
+    roomUserPosition:[0,0,0,0],
+    roomUserId:"",
+    gameStart:true,
+    turnPosition: 0,
+    turnAngel: 0,
+    turnStart: false,
+    countDownStart: false
 };
 var URL="192.168.1.102";
 // var URL="localhost";
@@ -110,7 +116,7 @@ var messageController=function (data) {
             break;
         }
         case "roomFull":{
-            toast("房间已满");
+            toast("房间已满或错误的操作，请重新进入房间");
             backToLobby();
             break;
         }
@@ -128,9 +134,9 @@ var messageController=function (data) {
  */
 var exitHandler=function () {
     toast("未登陆，请重新登陆~");
-    // setTimeout(function () {
-    //     window.location.href="http://"+URL+":8080/login.html";
-    // },2000);
+    setTimeout(function () {
+        window.location.href="http://"+URL+":8080/login.html";
+    },2000);
 };
 
 //view控制
@@ -171,6 +177,32 @@ var init=function () {
         websocket.send("{\"command\":\"backToLobby\",\"tableId\":\""+tableId+"\"}");
     });
 
+    //转动色子
+    document.getElementById("dice").addEventListener("click",function () {
+        if(docData.gameStart){
+            if(docData.turnPosition===getPosition()){
+                if(docData.turnStart){
+                    toast("已经转过转盘啦~");
+                }
+                else{
+                    docData.turnStart=true;
+                    startThisTurn();
+                }
+            }
+            else{
+                toast("还在其他人的回合，请耐心等待~");
+            }
+        }
+        else{
+            toast("游戏尚未开始，请等待所有玩家准备~");
+        }
+    });
+
+    //开始游戏
+    document.getElementById("start").addEventListener("click",function () {
+        startCountDown();
+    });
+
 };
 /**
  * 处理成员数据更新
@@ -196,9 +228,117 @@ var settingUserId=function (JSONObject) {
  * 当点击退出按钮以后
  */
 var backToLobby=function () {
+    if(docData.gameStart){
+        toast("游戏已经开始，请不要退出");
+    }
+    else{
+        setTimeout(function () {
+            window.location.href="http://"+URL+":8080/gameLobby.html";
+        },1000);
+    }
+};
+/**
+ * 获取当前的用户位置 position
+ * @returns {number} 用户的位置
+ */
+var getPosition=function (userId) {
+    if(!userId){
+        userId=docData.roomUserId;
+    }
+    var result=4;
+    docData.roomUserIds.forEach(function (t,i) {
+        if(t===userId){
+            result=i;
+        }
+    });
+    return result;
+};
+/**
+ * 用户开始这一轮
+ */
+var startThisTurn=function () {
+    setTurnAngel(1);
     setTimeout(function () {
-        window.location.href="http://"+URL+":8080/gameLobby.html";
-    },1000);
+        setCartoonPosition(1);
+    },3000);
+};
+/**
+ * 根据需要抛掷到的点数确定旋转的角度
+ * @param num
+ */
+var setTurnAngel=function (num) {
+    var nowNum=(docData.turnAngel/60+2)%6;
+    var rotateNum=num>nowNum?(num-nowNum):(num+6-nowNum);
+    var rotateAngel=rotateNum*60;
+    var angel=rotateAngel+docData.turnAngel+360*2;
+    docData.turnAngel=angel;
+    document.getElementById("dice").style.cssText="transform: rotate(-"+angel+"deg);";
+};
+/**
+ * 设置所有的小人的位置
+ * @param num 当前用户的需要改变的位置
+ * @param userId 需要改变的userId
+ */
+var setCartoonPosition=function (num,userId) {
+    var positionId=getPosition(userId);
+    docData.roomUserPosition[positionId]=(docData.roomUserPosition[positionId]+num)%10;
+    var cartoonIds=["personRed","personYellow","personGreen","personBlue"];
+    var presHandResult=preHandCartoonPosition();
+    setTimeout(function () {
+        cartoonIds.forEach(function (t,i) {
+            (function (t,i) {
+                document.getElementById(t).style.cssText="transition: all 1s;opacity: 0;";
+                document.getElementById(t).style.cssText="transition: all 1s;left: "+presHandResult[i].left+"em;top: "+presHandResult[i].top+"em;";
+            })(t,i);
+        })
+    },0);
+};
+/**
+ * 对小人的位置进行预处理，获取每个小人的left和top
+ * @returns {Array}
+ */
+var preHandCartoonPosition=function () {
+    var countMap={};
+    docData.roomUserPosition.forEach(function (t) {
+        if(countMap[t]==null){
+            countMap[t]=1;
+        }
+        else{
+            countMap[t]=countMap[t]+1;
+        }
+    });
+    var countIndexMap={};
+    var result=[];
+    docData.roomUserPosition.forEach(function (t) {
+        if(countIndexMap[t]==null){
+            countIndexMap[t]=0;
+        }
+        var count=countMap[t];
+        var left=cartoonPersonPosition[count][t][2*countIndexMap[t]];
+        var top=cartoonPersonPosition[count][t][2*countIndexMap[t]+1];
+        countIndexMap[t]=countIndexMap[t]+1;
+        result.push({left:left,top:top});
+    });
+    console.log(result);
+    return result;
+};
+/**
+ * 开始倒数计时
+ */
+var startCountDown=function () {
+    if(!docData.countDownStart){
+        docData.countDownStart=true;
+        document.getElementById("countDown").innerHTML="15s";
+        var countDonwInner=setInterval(function () {
+            var nowTime=document.getElementById("countDown").innerHTML.split("s")[0];
+            nowTime=nowTime-1;
+            if(nowTime===0){
+                clearInterval(countDonwInner);
+                nowTime=0;
+            }
+            document.getElementById("countDown").innerHTML=nowTime+"s";
+        },1000);
+    }
 };
 
 

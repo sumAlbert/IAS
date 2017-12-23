@@ -38,6 +38,14 @@ public class Table {
      * 登录到该房间的user,用于用户刷新页面
      */
     private List enterUserId=new ArrayList();
+    /**
+     * 离线用户的userId
+     */
+    private List offlineUserId=new ArrayList();
+    /**
+     * 游戏是否开始
+     */
+    private boolean gameStart=false;
 
     public int getState() {
         return state;
@@ -62,6 +70,18 @@ public class Table {
     }
     public List getEnterUserId() {
         return enterUserId;
+    }
+    public boolean isGameStart() {
+        return gameStart;
+    }
+    public void setGameStart(boolean gameStart) {
+        this.gameStart = gameStart;
+    }
+    public List getOfflineUserId() {
+        return offlineUserId;
+    }
+    public void setOfflineUserId(List offlineUserId) {
+        this.offlineUserId = offlineUserId;
     }
 
     /**

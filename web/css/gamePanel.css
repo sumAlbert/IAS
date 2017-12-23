@@ -256,6 +256,38 @@ input {
   padding: .2em .5em;
   cursor: pointer;
 }
+.mainBlackHouse-cartoonPerson0 {
+  height: 5em;
+  width: 3em;
+  background: url("../image/gamePanel/u25.png") center center no-repeat;
+  background-size: 100% 100%;
+  position: absolute;
+  left: 0;
+}
+.mainBlackHouse-cartoonPerson1 {
+  height: 5em;
+  width: 3em;
+  background: url("../image/gamePanel/u29.png") center center no-repeat;
+  background-size: 82% 100%;
+  position: absolute;
+  left: 3em;
+}
+.mainBlackHouse-cartoonPerson2 {
+  height: 5em;
+  width: 3em;
+  background: url("../image/gamePanel/u31.png") center center no-repeat;
+  background-size: 70% 100%;
+  position: absolute;
+  left: 6em;
+}
+.mainBlackHouse-cartoonPerson3 {
+  height: 5em;
+  width: 3em;
+  background: url("../image/gamePanel/u27.png") center center no-repeat;
+  background-size: 78% 100%;
+  position: absolute;
+  left: 9em;
+}
 .mainBoard-infoBoard {
   line-height: 18em;
   height: 100%;
@@ -332,7 +364,7 @@ input {
 }
 .mainResults {
   width: 100%;
-  height: 15em;
+  height: 16em;
   position: relative;
 }
 .mainResults-disc {
@@ -367,6 +399,8 @@ input {
   background: url("../image/gamePanel/u3.png") center center no-repeat;
   background-size: 100% 100%;
   cursor: pointer;
+  transform: rotate(0deg);
+  transition: all 3s;
 }
 .mainResults-tracks {
   height: 13.5em;
@@ -493,22 +527,26 @@ input {
   background-size: 100% 100%;
   left: 1em;
   top: 2em;
+  opacity: 1;
 }
 .mainResults-personYellow {
   background: url("../image/gamePanel/u29.png") center center no-repeat;
   background-size: 82% 100%;
   left: 3em;
   top: 2em;
+  opacity: 1;
 }
 .mainResults-personGreen {
   background: url("../image/gamePanel/u31.png") center center no-repeat;
   background-size: 70% 100%;
   left: 5em;
   top: 2em;
+  opacity: 1;
 }
 .mainResults-personBlue {
   background: url("../image/gamePanel/u27.png") center center no-repeat;
   background-size: 78% 100%;
   left: 7em;
   top: 2em;
+  opacity: 1;
 }
