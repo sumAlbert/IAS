@@ -56,10 +56,9 @@ public class QuestionHandler implements SqlHandler{
         int questionIndex=random.nextInt(questionTypeNumMax);
 
         Connection connection=baseConnection.getConnection();
-        String numStr=questionMap.get(String.valueOf(questionIndex));
         Question question=null;
         try (Statement statement = connection.createStatement()){
-            String questionTypeQuery="select * from questions where questionId = '"+numStr+"'";
+            String questionTypeQuery="select * from questions where questionType = '"+questionTypeId+"' limit "+questionIndex+",1";
             System.out.println(questionTypeQuery);
             ResultSet resultSet=statement.executeQuery(questionTypeQuery);
             while (resultSet.next()){

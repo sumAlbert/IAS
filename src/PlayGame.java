@@ -547,7 +547,7 @@ public class PlayGame {
             int roomUserPosition=table.getUserRoomPosition(users.get(session.getId()).getUserId());
             int questionType=roomUserPosition+Integer.valueOf((String)jsonObject.get("angel"));
             questionType=questionType%questionHandler.getTypeNum();
-            System.out.println(questionType);
+
 
             //获取问题
             Question question=(Question)questionHandler.selectSQL(questionType);

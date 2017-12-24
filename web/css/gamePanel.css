@@ -179,22 +179,27 @@ input {
   display: inline-block;
   vertical-align: middle;
   margin: 0 0 0 1em;
+  transition: all 1s;
 }
 .mainRanking-cartoonPersonRed {
   background: url("../image/gamePanel/u25.png") center center no-repeat;
   background-size: 100% 100%;
+  transform: scale(1);
 }
 .mainRanking-cartoonPersonGreen {
   background: url("../image/gamePanel/u29.png") center center no-repeat;
   background-size: 82% 100%;
+  transform: scale(1);
 }
 .mainRanking-cartoonPersonBlue {
   background: url("../image/gamePanel/u31.png") center center no-repeat;
   background-size: 70% 100%;
+  transform: scale(1);
 }
 .mainRanking-cartoonPersonYellow {
   background: url("../image/gamePanel/u27.png") center center no-repeat;
   background-size: 78% 100%;
+  transform: scale(1);
 }
 .mainBlackHouse-house {
   position: absolute;

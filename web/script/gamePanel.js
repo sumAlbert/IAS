@@ -59,7 +59,9 @@ var docData= {
     turnAngel: 0,
     turnStart: false,
     countDownStart: false,
-    questionInfo:{}
+    questionInfo:{},
+    answer:false,
+    startTimeDown:{}
 };
 var URL="192.168.1.102";
 // var URL="localhost";
@@ -311,6 +313,7 @@ var getPosition=function (userId) {
  */
 var startThisTurn=function () {
     var angel=Math.floor(6*Math.random())+1;
+    console.log("angel:"+angel);
     websocket.send("{\"command\":\"turnCrane\",\"angel\":\""+angel+"\"}");
 };
 /**
@@ -332,7 +335,7 @@ var setTurnAngel=function (num) {
  */
 var setCartoonPosition=function (num,userId) {
     var positionId=getPosition(userId);
-    docData.roomUserPosition[positionId]=(docData.roomUserPosition[positionId]+num)%10;
+    docData.roomUserPosition[positionId]=((docData.roomUserPosition[positionId]-0)+(num-0))%10;
     var cartoonIds=["personRed","personYellow","personGreen","personBlue"];
     var presHandResult=preHandCartoonPosition();
     setTimeout(function () {
@@ -391,10 +394,12 @@ var startCountDown=function (num) {
             nowTime=nowTime-1;
             if(nowTime===0){
                 clearInterval(countDonwInner);
+                docData.countDownStart=false;
                 nowTime=0;
             }
             document.getElementById("countDown").innerHTML=nowTime+"s";
         },1000);
+        docData.startTimeDown=countDonwInner;
     }
 };
 /**
@@ -430,6 +435,17 @@ var startPlay=function () {
         if(docData.turnPosition===getPosition())
             toast("点击转盘，开始转动它吧~");
     },3000);
+
+    //设置标志小人的大小
+    for(var i=0;i<4;i++){
+        console.log(docData.turnPosition==i);
+        if(docData.turnPosition==i){
+            document.getElementsByClassName("mainRanking-cartoonPerson")[docData.turnPosition].style.cssText="transform: scale(1.5);transition: all 1s;";
+        }
+        else{
+            document.getElementsByClassName("mainRanking-cartoonPerson")[i].style.cssText="transform: scale(1.0);transition: all 1s;";
+        }
+    }
 };
 /**
  * 设置答题面板的提示
@@ -488,32 +504,35 @@ var setQuestion=function () {
     for(var i=0;i<4;i++){
         document.getElementsByClassName("mainBoard-answerInfoSelect")[i].className="mainBoard-answerInfoSelect";
     }
+    docData.answer=true;
+    startCountDown();
 };
 /**
  * 选中答案
  */
 var selectAnswer=function (num) {
-    console.log(docData.turnPosition);
-    console.log(getPosition());
     if(docData.turnPosition==getPosition()){
-        for(var i=0;i<4;i++){
-            if(i==num){
-                document.getElementsByClassName("mainBoard-answerInfoSelect")[i].className="mainBoard-answerInfoSelect mainBoard-answerInfoSelectActive";
+        if(docData.answer){
+            docData.answer=false;
+            for(var i=0;i<4;i++){
+                if(i==num){
+                    document.getElementsByClassName("mainBoard-answerInfoSelect")[i].className="mainBoard-answerInfoSelect mainBoard-answerInfoSelectActive";
+                }
+                else{
+                    document.getElementsByClassName("mainBoard-answerInfoSelect")[i].className="mainBoard-answerInfoSelect";
+                }
             }
-            else{
-                document.getElementsByClassName("mainBoard-answerInfoSelect")[i].className="mainBoard-answerInfoSelect";
+            var tableId=window.location.search.substr(1);
+            if(!tableId){
+                tableId=docData.roomIdError;
             }
+            var rightAnswer=docData.questionInfo.answerRight;
+            var result=false;
+            if(rightAnswer==num){
+                result=true;
+            }
+            websocket.send("{\"command\":\"selectAnswer\",\"answer\":"+num+",\"result\":"+result+",\"tableId\":"+tableId+"}");
         }
-        var tableId=window.location.search.substr(1);
-        if(!tableId){
-            tableId=docData.roomIdError;
-        }
-        var rightAnswer=docData.questionInfo.answerRight;
-        var result=false;
-        if(rightAnswer==num){
-            result=true;
-        }
-        websocket.send("{\"command\":\"selectAnswer\",\"answer\":"+num+",\"result\":"+result+",\"tableId\":"+tableId+"}");
     }
     else{
         toast("还没有到您的回合，请稍后作答~");
@@ -524,6 +543,7 @@ var selectAnswer=function (num) {
  * @param jsonObject
  */
 var selectAnswerHandler=function (jsonObject) {
+    stopCountDown();
     //设置选中的答案
     for(var i=0;i<4;i++){
         if(i==jsonObject.answer){
@@ -546,6 +566,16 @@ var selectAnswerHandler=function (jsonObject) {
     //设置轮次
     docData.turnPosition=jsonObject.turn;
 
+    //设置标志小人的大小
+    for(var i=0;i<4;i++){
+        console.log(docData.turnPosition==i);
+        if(docData.turnPosition==i){
+            document.getElementsByClassName("mainRanking-cartoonPerson")[docData.turnPosition].style.cssText="transform: scale(1.5);transition: all 1s;";
+        }
+        else{
+            document.getElementsByClassName("mainRanking-cartoonPerson")[i].style.cssText="transform: scale(1.0);transition: all 1s;";
+        }
+    }
     //开始下一轮
     if(docData.turnPosition==getPosition()){
         toast("请转动转盘~！");
@@ -562,18 +592,34 @@ var turnAngelBlackHouse=function (jsonObject) {
         var positionId=getPosition(jsonObject.userId);
         changeUserClose(positionId);
     }
-
     //设置轮次
     docData.turnPosition=jsonObject.turn;
 
+    //设置标志小人的大小
+    for(var i=0;i<4;i++){
+        console.log(docData.turnPosition==i);
+        if(docData.turnPosition==i){
+            document.getElementsByClassName("mainRanking-cartoonPerson")[docData.turnPosition].style.cssText="transform: scale(1.5);transition: all 1s;";
+        }
+        else{
+            document.getElementsByClassName("mainRanking-cartoonPerson")[i].style.cssText="transform: scale(1.0);transition: all 1s;";
+        }
+    }
     //开始下一轮
     if(docData.turnPosition==getPosition()){
         toast("请转动转盘~！");
     }
     docData.turnStart=false;
 };
-
-
+/**
+ * 停止计时
+ */
+var stopCountDown=function () {
+    clearInterval(docData.startTimeDown);
+    docData.countDownStart=false;
+    var nowTime=0;
+    document.getElementById("countDown").innerHTML=nowTime+"s";
+};
 
 
 
