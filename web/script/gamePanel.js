@@ -51,12 +51,15 @@ var docData= {
     currentPoint: 2,
     roomUserIds:[],
     roomUserPosition:[0,0,0,0],
+    roomUserClose:[false,false,false,false],
     roomUserId:"",
-    gameStart:true,
+    roomUserPrepare: false,
+    gameStart:false,
     turnPosition: 0,
     turnAngel: 0,
     turnStart: false,
-    countDownStart: false
+    countDownStart: false,
+    questionInfo:{}
 };
 var URL="192.168.1.102";
 // var URL="localhost";
@@ -122,6 +125,29 @@ var messageController=function (data) {
         }
         case "setUserId":{
             settingUserId(JSONObject);
+            break;
+        }
+        case "prepareFinish":{
+            setMainBoardPrompt(3);
+            docData.roomUserPrepare=true;
+            break;
+        }
+        case "startPlay":{
+            startPlay(JSONObject);
+            break;
+        }
+        case "turnAngelResult":{
+            console.log(JSONObject);
+            setTurnAngel(JSONObject.angel);
+            docData.questionInfo=JSONObject.question;
+            setTimeout(function () {
+                setCartoonPosition(JSONObject.angel,JSONObject.userId);
+                setQuestion();
+            },3000);
+            break;
+        }
+        case "selectResult":{
+            selectAnswerHandler(JSONObject);
             break;
         }
         default:
@@ -200,9 +226,28 @@ var init=function () {
 
     //开始游戏
     document.getElementById("start").addEventListener("click",function () {
-        startCountDown();
+        if(docData.gameStart){
+            toast("游戏已经开始，无需准备");
+        }
+        else{
+            if(docData.roomUserPrepare){
+                toast("您已准备，无需重新准备")
+            }
+            else{
+                prepare();
+            }
+        }
     });
 
+    //选中答案
+    var answers=document.getElementsByClassName("mainBoard-answerInfoSelect");
+    for(var i=0;i<answers.length;i++){
+        (function (i) {
+            answers[i].addEventListener("click",function () {
+                selectAnswer(i);
+            });
+        })(i);
+    }
 };
 /**
  * 处理成员数据更新
@@ -257,10 +302,8 @@ var getPosition=function (userId) {
  * 用户开始这一轮
  */
 var startThisTurn=function () {
-    setTurnAngel(1);
-    setTimeout(function () {
-        setCartoonPosition(1);
-    },3000);
+    var angel=Math.floor(6*Math.random())+1;
+    websocket.send("{\"command\":\"turnCrane\",\"angel\":\""+angel+"\"}");
 };
 /**
  * 根据需要抛掷到的点数确定旋转的角度
@@ -268,7 +311,7 @@ var startThisTurn=function () {
  */
 var setTurnAngel=function (num) {
     var nowNum=(docData.turnAngel/60+2)%6;
-    var rotateNum=num>nowNum?(num-nowNum):(num+6-nowNum);
+    var rotateNum=num>nowNum?(num-nowNum):(num-0+6-nowNum);
     var rotateAngel=rotateNum*60;
     var angel=rotateAngel+docData.turnAngel+360*2;
     docData.turnAngel=angel;
@@ -287,8 +330,11 @@ var setCartoonPosition=function (num,userId) {
     setTimeout(function () {
         cartoonIds.forEach(function (t,i) {
             (function (t,i) {
+                var opacity=document.getElementById(t).style.opacity;
                 document.getElementById(t).style.cssText="transition: all 1s;opacity: 0;";
                 document.getElementById(t).style.cssText="transition: all 1s;left: "+presHandResult[i].left+"em;top: "+presHandResult[i].top+"em;";
+                document.getElementById(t).style.opacity=opacity;
+
             })(t,i);
         })
     },0);
@@ -325,10 +371,13 @@ var preHandCartoonPosition=function () {
 /**
  * 开始倒数计时
  */
-var startCountDown=function () {
+var startCountDown=function (num) {
     if(!docData.countDownStart){
         docData.countDownStart=true;
-        document.getElementById("countDown").innerHTML="15s";
+        if(!num)
+            document.getElementById("countDown").innerHTML="15s";
+        else
+            document.getElementById("countDown").innerHTML="3s";
         var countDonwInner=setInterval(function () {
             var nowTime=document.getElementById("countDown").innerHTML.split("s")[0];
             nowTime=nowTime-1;
@@ -340,5 +389,172 @@ var startCountDown=function () {
         },1000);
     }
 };
+/**
+ * 更改对应位置上的人进入小黑屋的状态
+ * @param positionId 位置id
+ */
+var changeUserClose=function (positionId) {
+    docData.roomUserClose[positionId]=!docData.roomUserClose[positionId];
+    var cartoonIds=["personRed","personYellow","personGreen","personBlue"];
+    if(docData.roomUserClose[positionId]){
+        document.getElementById("mainBlackHouse-cartoonPerson"+positionId).style.opacity="1";
+        document.getElementById(cartoonIds[positionId]).style.opacity="0";
+    }
+    else{
+        document.getElementById("mainBlackHouse-cartoonPerson"+positionId).style.opacity="0";
+        document.getElementById(cartoonIds[positionId]).style.opacity="1";
+    }
+};
+/**
+ * 当前玩家准备
+ */
+var prepare=function () {
+    if(!docData.gameStart)
+        websocket.send("{\"command\":\"prepare\"}");
+};
+/**
+ * 开始游戏
+ */
+var startPlay=function () {
+    setMainBoardPrompt(4);
+    docData.gameStart=true;
+    setTimeout(function () {
+        if(docData.turnPosition===getPosition())
+            toast("点击转盘，开始转动它吧~");
+    },3000);
+};
+/**
+ * 设置答题面板的提示
+ */
+var setMainBoardPrompt=function (num) {
+    document.getElementById("countDown").style.cssText="display:none";
+    switch (num){
+        case 0:{
+            //答对了
+            document.getElementById("mainBoard-info1").innerHTML="答对啦！收获一枚金币哦";
+            document.getElementById("mainBoard-info2").innerHTML="(^з^)-☆";
+            break;
+        }
+        case 1:{
+            //打错了
+            document.getElementById("mainBoard-info1").innerHTML="答错了，被关进小黑屋...";
+            document.getElementById("mainBoard-info2").innerHTML="_(:_」∠)_";
+            break;
+        }
+        case 2:{
+            //初始化界面
+            document.getElementById("mainBoard-info1").innerHTML="请准备，游戏马上开始~";
+            document.getElementById("mainBoard-info2").innerHTML="(^з^)-☆";
+            break;
+        }
+        case 3:{
+            //已经准备
+            document.getElementById("mainBoard-info1").innerHTML="已准备，等待其他玩家准备";
+            document.getElementById("mainBoard-info2").innerHTML="(^з^)-☆";
+            break;
+        }
+        case 4:{
+            //所有玩家都准备了，游戏马上开始
+            document.getElementById("countDown").style.cssText="display:block";
+            document.getElementById("mainBoard-info1").innerHTML="所有玩家均已准备，游戏即将开始~";
+            document.getElementById("mainBoard-info2").innerHTML="(^з^)-☆";
+            startCountDown(3);
+        }
+        default:
+            break;
+    }
+    document.getElementById("mainBoard-infoBoard").style.cssText="display:block";
+    document.getElementById("mainBoard-question").style.cssText="display:none";
+};
+/**
+ * 根据docData显示问题题目
+ */
+var setQuestion=function () {
+    document.getElementById("questionInfo").innerHTML=docData.questionInfo.questionInfo;
+    document.getElementById("answerA").innerHTML=docData.questionInfo.answerA;
+    document.getElementById("answerB").innerHTML=docData.questionInfo.answerB;
+    document.getElementById("answerC").innerHTML=docData.questionInfo.answerC;
+    document.getElementById("answerD").innerHTML=docData.questionInfo.answerD;
+    document.getElementById("mainBoard-infoBoard").style.cssText="display:none";
+    document.getElementById("mainBoard-question").style.cssText="display:block";
+    for(var i=0;i<4;i++){
+        document.getElementsByClassName("mainBoard-answerInfoSelect")[i].className="mainBoard-answerInfoSelect";
+    }
+};
+/**
+ * 选中答案
+ */
+var selectAnswer=function (num) {
+    console.log(docData.turnPosition);
+    console.log(getPosition());
+    if(docData.turnPosition==getPosition()){
+        for(var i=0;i<4;i++){
+            if(i==num){
+                document.getElementsByClassName("mainBoard-answerInfoSelect")[i].className="mainBoard-answerInfoSelect mainBoard-answerInfoSelectActive";
+            }
+            else{
+                document.getElementsByClassName("mainBoard-answerInfoSelect")[i].className="mainBoard-answerInfoSelect";
+            }
+        }
+        var tableId=window.location.search.substr(1);
+        if(!tableId){
+            tableId=docData.roomIdError;
+        }
+        var rightAnswer=docData.questionInfo.answerRight;
+        var result=false;
+        if(rightAnswer==num){
+            result=true;
+        }
+        websocket.send("{\"command\":\"selectAnswer\",\"answer\":"+num+",\"result\":"+result+",\"tableId\":"+tableId+"}");
+    }
+    else{
+        toast("还没有到您的回合，请稍后作答~");
+    }
+};
+/**
+ * 选中完答案后的处理
+ * @param jsonObject
+ */
+var selectAnswerHandler=function (jsonObject) {
+    //设置选中的答案
+    for(var i=0;i<4;i++){
+        if(i==jsonObject.answer){
+            document.getElementsByClassName("mainBoard-answerInfoSelect")[i].className="mainBoard-answerInfoSelect mainBoard-answerInfoSelectActive";
+        }
+        else{
+            document.getElementsByClassName("mainBoard-answerInfoSelect")[i].className="mainBoard-answerInfoSelect";
+        }
+    }
+    //设置分数
+    for(var i=0;i<4;i++){
+        document.getElementsByClassName("mainRanking-playerScore")[i].innerHTML=jsonObject.scores[i];
+    }
+    //设置是否关到小黑屋
+    if(!jsonObject.result){
+        var positionId=getPosition(jsonObject.userId);
+        console.log(positionId);
+        changeUserClose(positionId);
+    }
+    //设置轮次
+    docData.turnPosition=jsonObject.turn;
+
+    //开始下一轮
+    if(docData.turnPosition==getPosition()){
+        toast("请转动转盘~！");
+    }
+    docData.turnStart=false;
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 

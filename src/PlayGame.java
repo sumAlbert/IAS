@@ -1,5 +1,8 @@
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import question.Question;
+import sql.BaseConnection;
+import sql.QuestionHandler;
 import table.Table;
 import user.User;
 
@@ -42,8 +45,14 @@ public class PlayGame {
      * 处在大厅的session
      */
     private static List<String> gameLobbys=new ArrayList<>();
-
+    /**
+     * 离线玩家的列表（暂时没有用处，向后兼容）
+     */
     private static Map<String,Integer> offLineUserIds=new HashMap<>();
+    /**
+     * 数据库链接器
+     */
+    private static BaseConnection baseConnection=new BaseConnection("ias");
 
     public PlayGame(){
         for(int i=tables.size();i<MAX_PAGES*MAX_TABLES_PER;i++){
@@ -71,6 +80,18 @@ public class PlayGame {
                 if(backToLobby(session,jsonObjectReceive)){
                     sendInfoAllLobby("updateTableInfo");
                 }
+                break;
+            }
+            case "prepare":{
+                playPrepare(session);
+                break;
+            }
+            case "turnCrane":{
+                turnCrane(session,jsonObjectReceive);
+                break;
+            }
+            case "selectAnswer":{
+                selectAnswer(session,jsonObjectReceive);
                 break;
             }
             default:
@@ -113,6 +134,7 @@ public class PlayGame {
     @OnError
     public void onError(Session session, Throwable throwable){
         System.out.println(session.getId()+" error");
+        throwable.printStackTrace();
     }
 
     @OnClose
@@ -129,7 +151,7 @@ public class PlayGame {
                 }
                 case User.CURRENTPAGE_PANEL:{
                     //当用户错误的关闭当前页面的时候
-                    if(user.getTableId()!=Table.ERROR_ID){
+                    if(tables.get(user.getTableId()).userIdExisted(user.getUserId())){
                         tables.get(user.getTableId()).leaveRoom(session,user.getUserId());
                         sendInfoAllLobby("updateTableInfo");
                         sendUpgradeMember(user.getTableId());
@@ -167,22 +189,24 @@ public class PlayGame {
         switch (position){
             case "gameLobby":{
                 //设置user访问的状态
-                users.get(session.getId()).setPlayGameCurrentPage(User.CURRENTPAGE_LOBBY);
-                gameLobbys.add(session.getId());
-                List<String> backResultList=new ArrayList<>();
-                Map backResultMap=new HashMap<>(16);
-                //传递table的列表信息
-                for(int i=0;i<tables.size();i++){
-                    String tableBriefInfo=tables.get(i).stateToStr();
-                    backResultList.add(tableBriefInfo);
-                }
-                backResultMap.put("commandBack","updateTableInfo");
-                backResultMap.put("data",backResultList);
-                JSONObject backResultJson=JSONObject.fromObject(backResultMap);
-                try {
-                    session.getBasicRemote().sendText(backResultJson.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(users.get(session.getId())!=null){
+                    users.get(session.getId()).setPlayGameCurrentPage(User.CURRENTPAGE_LOBBY);
+                    gameLobbys.add(session.getId());
+                    List<String> backResultList=new ArrayList<>();
+                    Map backResultMap=new HashMap<>(16);
+                    //传递table的列表信息
+                    for(int i=0;i<tables.size();i++){
+                        String tableBriefInfo=tables.get(i).stateToStr();
+                        backResultList.add(tableBriefInfo);
+                    }
+                    backResultMap.put("commandBack","updateTableInfo");
+                    backResultMap.put("data",backResultList);
+                    JSONObject backResultJson=JSONObject.fromObject(backResultMap);
+                    try {
+                        session.getBasicRemote().sendText(backResultJson.toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             }
@@ -330,7 +354,6 @@ public class PlayGame {
         backResultMap.put("commandBack","backToLobby");
         if(table.leaveRoom(session,users.get(session.getId()).getUserId())){
             System.out.println(session.getId()+" : 离开成功");
-            users.get(session.getId()).setTableId(Table.ERROR_ID);
             backResultMap.put("backToLobby",true);
             result=true;
         }
@@ -355,6 +378,45 @@ public class PlayGame {
         boolean result=false;
         switch (type){
             case "updateMemberInfo":{
+                try {
+                    if(attachment!=null){
+                        for(int i=0;i<tables.get(tableId).getEnterSession().size();i++){
+                            Session session=(Session)tables.get(tableId).getEnterSession().get(i);
+                            session.getBasicRemote().sendText(attachment);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            case "startPlay":{
+                try {
+                    if(attachment!=null){
+                        for(int i=0;i<tables.get(tableId).getEnterSession().size();i++){
+                            Session session=(Session)tables.get(tableId).getEnterSession().get(i);
+                            session.getBasicRemote().sendText(attachment);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            case "turnAngelResult":{
+                try {
+                    if(attachment!=null){
+                        for(int i=0;i<tables.get(tableId).getEnterSession().size();i++){
+                            Session session=(Session)tables.get(tableId).getEnterSession().get(i);
+                            session.getBasicRemote().sendText(attachment);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            case "selectAnswer":{
                 try {
                     if(attachment!=null){
                         for(int i=0;i<tables.get(tableId).getEnterSession().size();i++){
@@ -414,6 +476,99 @@ public class PlayGame {
     }
 
     /**
-     *
+     * 当前玩家准备
+     * @return 游戏是否开始
      */
+    private static synchronized boolean playPrepare(Session session){
+        boolean result=false;
+        Table table=tables.get(users.get(session.getId()).getTableId());
+        if(table.prepare(users.get(session.getId()).getUserId(),session)){
+            //如果准备好了
+            result=true;
+            startPlay(users.get(session.getId()).getTableId());
+        }
+        else{
+            //如果没有准备好
+            String sendToSession="{\"commandBack\":\"prepareFinish\"}";
+            try {
+                session.getBasicRemote().sendText(sendToSession);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        sendInfoAllLobby("updateTableInfo");
+        return result;
+    }
+
+    /**
+     * 开始游戏
+     * @return 将开始游戏的消息发送给所有玩家
+     */
+    private static synchronized boolean startPlay(int tableId){
+        boolean result=false;
+        String sendToTables="{\"commandBack\":\"startPlay\"}";
+        tables.get(tableId).initScores();
+        tables.get(tableId).initTrace();
+        tables.get(tableId).initBlack();
+        sendInfoAllTable(tableId,"startPlay",sendToTables);
+        return result;
+    }
+
+    /**
+     * 转动转盘
+     * @return 将转动转盘的结果分发给每一桌面用户，并且将题目也发送给每一个用户
+     */
+    private static synchronized boolean turnCrane(Session session,JSONObject jsonObject){
+        boolean result=false;
+        //配置QuestionHandler和获取table
+        QuestionHandler questionHandler=new QuestionHandler(baseConnection);
+        Table table=tables.get(users.get(session.getId()).getTableId());
+
+        //获取问题的种类
+        int roomUserPosition=table.getUserRoomPosition(users.get(session.getId()).getUserId());
+        int questionType=roomUserPosition+Integer.valueOf((String)jsonObject.get("angel"));
+        questionType=questionType%questionHandler.getTypeNum();
+        System.out.println(questionType);
+
+        //获取问题
+        Question question=(Question)questionHandler.selectSQL(questionType);
+        Map jsonResultMap=new HashMap(16);
+        jsonResultMap.put("question",question);
+        jsonResultMap.put("commandBack","turnAngelResult");
+        jsonResultMap.put("angel",jsonObject.get("angel"));
+        jsonResultMap.put("userId",users.get(session.getId()).getUserId());
+        JSONObject jsonResultObject=JSONObject.fromObject(jsonResultMap);
+        System.out.println(jsonResultObject.toString());
+        String sendToTables=jsonResultObject.toString();
+        sendInfoAllTable(users.get(session.getId()).getTableId(),"turnAngelResult",sendToTables);
+        return result;
+    }
+
+    /**
+     *
+     * @param session
+     * @param jsonObject
+     * @return
+     */
+    private static synchronized boolean selectAnswer(Session session,JSONObject jsonObject){
+        boolean result=false;
+        Table table=tables.get((int)jsonObject.get("tableId"));
+        boolean answerResult=(boolean)jsonObject.get("result");
+        int answer=(int)jsonObject.get("answer");
+        User user=users.get(session.getId());
+        int positionId=table.getUserRoomPosition(user.getUserId());
+
+        table.setSelectedAnswer(positionId,answerResult);
+        HashMap jsonBackResult=new HashMap(16);
+        jsonBackResult.put("commandBack","selectResult");
+        jsonBackResult.put("userId",user.getUserId());
+        jsonBackResult.put("scores",table.getScores());
+        jsonBackResult.put("result",answerResult);
+        jsonBackResult.put("answer",answer);
+        jsonBackResult.put("turn",table.getCurrentTurn());
+        JSONObject jsonBackObject=JSONObject.fromObject(jsonBackResult);
+        System.out.println(jsonBackObject.toString());
+        sendInfoAllTable(users.get(session.getId()).getTableId(),"selectAnswer",jsonBackObject.toString());
+        return result;
+    }
 }

@@ -70,4 +70,15 @@ public class RandomHandler {
         }
         return  result;
     }
+    /**
+     * 获取随机题号
+     * @param length 题目列表的大小
+     * @return 题目的序号
+     */
+    public int getQuestion(int length){
+        Random random = new Random();
+        int result=random.nextInt(length);
+        return result;
+    }
+
 }

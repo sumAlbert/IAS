@@ -2,7 +2,9 @@ package table;
 
 import javax.websocket.Session;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 98267
@@ -46,6 +48,23 @@ public class Table {
      * 游戏是否开始
      */
     private boolean gameStart=false;
+    /**
+     * 当前轮到哪个座位上的人
+     */
+    private int currentTurn=0;
+    /**
+     * 记录各个位置的分数
+     */
+    private List scores=new ArrayList();
+    /**
+     * 跑到上的位置
+     */
+    private List tracePosition=new ArrayList();
+    /**
+     * 小黑屋
+     */
+    private Map blackHouse=new HashMap();
+
 
     public int getState() {
         return state;
@@ -82,6 +101,24 @@ public class Table {
     }
     public void setOfflineUserId(List offlineUserId) {
         this.offlineUserId = offlineUserId;
+    }
+    public int getCurrentTurn() {
+        return currentTurn;
+    }
+    public void setCurrentTurn(int currentTurn) {
+        this.currentTurn = currentTurn;
+    }
+    public void setScores(List scores) {
+        this.scores = scores;
+    }
+    public List getScores() {
+        return scores;
+    }
+    public List getTracePosition() {
+        return tracePosition;
+    }
+    public void setTracePosition(List tracePosition) {
+        this.tracePosition = tracePosition;
     }
 
     /**
@@ -146,6 +183,86 @@ public class Table {
             }
         }
         return result;
+    }
+    /**
+     * userId准备游戏
+     * @param userId 准备游戏的userId
+     * @return 游戏是否开始
+     */
+    public boolean prepare(String userId,Session session){
+        boolean result=false;
+        if(!gameStart){
+            if(userIdExisted(userId)){
+                prepareSession.remove(session);
+                prepareSession.add(session);
+                if(prepareSession.size()==enterSession.size()&&prepareSession.size()>1){
+                    gameStart=true;
+                    this.state=Table.STATE_GAMEING;
+                    result=true;
+                }
+            }
+        }
+        return result;
+    }
+    /**
+     * 初始化分数
+     */
+    public void initScores(){
+        this.scores=new ArrayList();
+        scores.add(0);
+        scores.add(0);
+        scores.add(0);
+        scores.add(0);
+    }
+    /**
+     * 初始化在跑道上的位置
+     */
+    public void initTrace(){
+        this.tracePosition=new ArrayList();
+        tracePosition.add(0);
+        tracePosition.add(0);
+        tracePosition.add(0);
+        tracePosition.add(0);
+    }
+    /**
+     * 初始化小黑屋里面的人
+     */
+    public void initBlack(){
+        this.blackHouse=new HashMap<>(16);
+        this.blackHouse.put(0,false);
+        this.blackHouse.put(1,false);
+        this.blackHouse.put(2,false);
+        this.blackHouse.put(3,false);
+    }
+    /**
+     * 获取用户所在的位置
+     * @param userId 用户的id
+     * @return
+     */
+    public int getUserRoomPosition(String userId){
+        int result=1000;
+        for(int i=0;i<this.enterUserId.size();i++){
+            if(enterUserId.get(i).equals(userId)){
+                result=i;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 选中答案以后的设置
+     * @param position 选择答案的玩家的位置
+     * @param result 选择的答案是否正确
+     */
+    public void setSelectedAnswer(int position,boolean result){
+        if(result){
+            int score=(int)this.scores.get(position);
+            this.scores.set(position,score+1);
+        }
+        else{
+            this.blackHouse.put(position,true);
+        }
+        this.currentTurn=(this.currentTurn+1)%enterSession.size();
     }
 }
 

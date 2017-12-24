@@ -199,7 +199,7 @@ input {
 .mainBlackHouse-house {
   position: absolute;
   bottom: 8em;
-  width: 12.5em;
+  width: 13em;
   height: 8em;
   background: url("../image/gamePanel/u51.png") center center no-repeat;
   background-size: 100% 100%;
@@ -261,39 +261,52 @@ input {
   width: 3em;
   background: url("../image/gamePanel/u25.png") center center no-repeat;
   background-size: 100% 100%;
-  position: absolute;
-  left: 0;
+  position: relative;
+  left: .5em;
+  top: 1em;
+  display: inline-block;
+  opacity: 0;
+  transition: all 1s;
 }
 .mainBlackHouse-cartoonPerson1 {
   height: 5em;
   width: 3em;
   background: url("../image/gamePanel/u29.png") center center no-repeat;
   background-size: 82% 100%;
-  position: absolute;
-  left: 3em;
+  position: relative;
+  top: 1em;
+  display: inline-block;
+  opacity: 0;
+  transition: all 1s;
 }
 .mainBlackHouse-cartoonPerson2 {
   height: 5em;
   width: 3em;
   background: url("../image/gamePanel/u31.png") center center no-repeat;
   background-size: 70% 100%;
-  position: absolute;
-  left: 6em;
+  position: relative;
+  top: 1em;
+  display: inline-block;
+  opacity: 0;
+  transition: all 1s;
 }
 .mainBlackHouse-cartoonPerson3 {
   height: 5em;
   width: 3em;
   background: url("../image/gamePanel/u27.png") center center no-repeat;
   background-size: 78% 100%;
-  position: absolute;
-  left: 9em;
+  position: relative;
+  top: 1em;
+  display: inline-block;
+  opacity: 0;
+  transition: all 1s;
 }
 .mainBoard-infoBoard {
   line-height: 18em;
   height: 100%;
   width: 100%;
   position: relative;
-  display: none;
+  display: block;
 }
 .mainBoard-info {
   vertical-align: middle;
@@ -310,6 +323,7 @@ input {
   height: calc(100% - 1px);
   position: relative;
   border-top: 1px solid transparent;
+  display: none;
 }
 .mainBoard-questionInfo {
   font-family: hkpp;
@@ -351,6 +365,7 @@ input {
   font-family: hkpp;
   font-size: 1.3em;
   font-weight: 700;
+  display: none;
 }
 .mainBoard-answerInfoSelect {
   display: inline-block;
@@ -528,6 +543,7 @@ input {
   left: 1em;
   top: 2em;
   opacity: 1;
+  transition: all 1s;
 }
 .mainResults-personYellow {
   background: url("../image/gamePanel/u29.png") center center no-repeat;
@@ -535,6 +551,7 @@ input {
   left: 3em;
   top: 2em;
   opacity: 1;
+  transition: all 1s;
 }
 .mainResults-personGreen {
   background: url("../image/gamePanel/u31.png") center center no-repeat;
@@ -542,6 +559,7 @@ input {
   left: 5em;
   top: 2em;
   opacity: 1;
+  transition: all 1s;
 }
 .mainResults-personBlue {
   background: url("../image/gamePanel/u27.png") center center no-repeat;
@@ -549,4 +567,5 @@ input {
   left: 7em;
   top: 2em;
   opacity: 1;
+  transition: all 1s;
 }

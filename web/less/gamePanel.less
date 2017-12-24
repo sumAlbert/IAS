@@ -39,27 +39,27 @@ input{margin: 0;padding: 0;outline: none;height: 100%;width: 100%;border: none;b
 .mainRanking-cartoonPersonYellow{background: url("../image/gamePanel/u27.png") center center no-repeat;background-size: 78% 100%;}
 
 
-.mainBlackHouse-house{position: absolute;bottom: 8em;width: 12.5em;height: 8em;background: url("../image/gamePanel/u51.png") center center no-repeat;background-size: 100% 100%;}
+.mainBlackHouse-house{position: absolute;bottom: 8em;width: 13em;height: 8em;background: url("../image/gamePanel/u51.png") center center no-repeat;background-size: 100% 100%;}
 .mainBlackHouse-decorate{position: absolute;height: 100%;width: 100%;z-index: -1;}
 .mainBlackHouse-decorate1{position: absolute;height: 4.93em;width: 2.81em;z-index: -1;top: -4.93em;background: url("../image/gamePanel/u47.png") center center no-repeat;background-size: 100% 100%;}
 .mainBlackHouse-decorate2{position: absolute;z-index: -1;top: -2.43em;left: 2.3em;font-family: hkpp;font-size: 1.3em;font-weight: 700;transition: all 1s;}
 .mainBlackHouse-control{position: absolute;bottom: 0em;width: 12.5em;height: 8em;display: flex;justify-content: space-around;align-items: center;}
 .mainBlackHouse-start{font-family: hkpp;font-size: 1.4em;font-weight: 700;background: url("../image/gamePanel/u148.png") center center no-repeat;background-size: 100% 100%;padding: .2em .5em;cursor: pointer;}
 .mainBlackHouse-exit{font-family: hkpp;font-size: 1.4em;font-weight: 700;background: url("../image/gamePanel/u148.png") center center no-repeat;background-size: 100% 100%;padding: .2em .5em;cursor: pointer;}
-.mainBlackHouse-cartoonPerson0{height: 5em;width: 3em;background: url("../image/gamePanel/u25.png") center center no-repeat;background-size: 100% 100%;position: absolute;left: 0;}
-.mainBlackHouse-cartoonPerson1{height: 5em;width: 3em;background: url("../image/gamePanel/u29.png") center center no-repeat;background-size: 82% 100%;position: absolute;left: 3em;}
-.mainBlackHouse-cartoonPerson2{height: 5em;width: 3em;background: url("../image/gamePanel/u31.png") center center no-repeat;background-size: 70% 100%;position: absolute;left: 6em;}
-.mainBlackHouse-cartoonPerson3{height: 5em;width: 3em;background: url("../image/gamePanel/u27.png") center center no-repeat;background-size: 78% 100%;position: absolute;left: 9em; }
+.mainBlackHouse-cartoonPerson0{height: 5em;width: 3em;background: url("../image/gamePanel/u25.png") center center no-repeat;background-size: 100% 100%;position: relative;left: .5em;top: 1em;display: inline-block;opacity: 0;transition: all 1s;}
+.mainBlackHouse-cartoonPerson1{height: 5em;width: 3em;background: url("../image/gamePanel/u29.png") center center no-repeat;background-size: 82% 100%;position: relative;top: 1em;display: inline-block;opacity: 0;transition: all 1s;}
+.mainBlackHouse-cartoonPerson2{height: 5em;width: 3em;background: url("../image/gamePanel/u31.png") center center no-repeat;background-size: 70% 100%;position: relative;top: 1em;display: inline-block;opacity: 0;transition: all 1s;}
+.mainBlackHouse-cartoonPerson3{height: 5em;width: 3em;background: url("../image/gamePanel/u27.png") center center no-repeat;background-size: 78% 100%;position: relative;top: 1em;display: inline-block;opacity: 0;transition: all 1s;}
 
 
-.mainBoard-infoBoard{line-height: 18em;height: 100%;width: 100%;position: relative;display: none;}
+.mainBoard-infoBoard{line-height: 18em;height: 100%;width: 100%;position: relative;display: block;}
 .mainBoard-info{vertical-align: middle;line-height: 2.5em;display: inline-block;text-align: center;width: 100%;font-family: hkpp;font-size: 1.3em;font-weight: 700;}
-.mainBoard-question{width: 100%;height: calc(~ "100% - 1px");position: relative;border-top: 1px solid transparent;}
+.mainBoard-question{width: 100%;height: calc(~ "100% - 1px");position: relative;border-top: 1px solid transparent;display: none;}
 .mainBoard-questionInfo{font-family: hkpp;font-size: 1.3em;font-weight: 700;margin: 2.3em 2em 0;max-height: 3.3em;overflow: auto;}
 .mainBoard-answerInfos{display: flex;width: calc(~'100% - 6em');margin: 1em auto;flex-wrap: wrap;}
 .mainBoard-answerInfo{font-family: hkpp;font-size: 1.3em;font-weight: 700;min-width: 50%;margin: .3em 0;height: 1.7em;overflow: hidden;cursor: pointer;}
 .mainBoard-decorate1{position: absolute;bottom: 1em;right: 1em;width: 3.25em;height: 3.25em;background: url("../image/gamePanel/u43.png") center center no-repeat;background-size: 100% 100%;}
-.mainBoard-decorate2{position: absolute;top: 1em;right: 2em;font-family: hkpp;font-size: 1.3em;font-weight: 700;}
+.mainBoard-decorate2{position: absolute;top: 1em;right: 2em;font-family: hkpp;font-size: 1.3em;font-weight: 700;display: none;}
 .mainBoard-answerInfoSelect{display: inline-block;width: 1.7em;height: 1.7em;text-align: center;}
 .mainBoard-answerInfoSelectActive{background: url("../image/gamePanel/u45.png") center center no-repeat;background-size: 100% 100%;}
 
@@ -94,10 +94,10 @@ input{margin: 0;padding: 0;outline: none;height: 100%;width: 100%;border: none;b
 
 .mainResults-person{height: 3.5em;width: 2.3em;position: absolute;}
 
-.mainResults-personRed{background: url("../image/gamePanel/u25.png") center center no-repeat;background-size: 100% 100%;left: 1em;top: 2em;opacity: 1;}
-.mainResults-personYellow{background: url("../image/gamePanel/u29.png") center center no-repeat;background-size: 82% 100%;left: 3em;top: 2em;opacity: 1;}
-.mainResults-personGreen{background: url("../image/gamePanel/u31.png") center center no-repeat;background-size: 70% 100%;left: 5em;top: 2em;opacity: 1;}
-.mainResults-personBlue{background: url("../image/gamePanel/u27.png") center center no-repeat;background-size: 78% 100%;left: 7em;top: 2em;opacity: 1;}
+.mainResults-personRed{background: url("../image/gamePanel/u25.png") center center no-repeat;background-size: 100% 100%;left: 1em;top: 2em;opacity: 1;transition: all 1s;}
+.mainResults-personYellow{background: url("../image/gamePanel/u29.png") center center no-repeat;background-size: 82% 100%;left: 3em;top: 2em;opacity: 1;transition: all 1s;}
+.mainResults-personGreen{background: url("../image/gamePanel/u31.png") center center no-repeat;background-size: 70% 100%;left: 5em;top: 2em;opacity: 1;transition: all 1s;}
+.mainResults-personBlue{background: url("../image/gamePanel/u27.png") center center no-repeat;background-size: 78% 100%;left: 7em;top: 2em;opacity: 1;transition: all 1s;}
 
 
 
