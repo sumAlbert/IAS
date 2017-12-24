@@ -177,6 +177,20 @@ public class Table {
         return result;
     }
     /**
+     * 判断UserId是否离线
+     * @param userId 判断的UserId
+     * @return 结果
+     */
+    public boolean userIdOffline(String userId){
+        boolean result=false;
+        for (Object anEnterUserId : offlineUserId) {
+            if (userId.equals(anEnterUserId)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+    /**
      * 判断session是否存在
      * @param session 判断的session
      * @return 结果
@@ -267,7 +281,23 @@ public class Table {
         else{
             this.blackHouse.put(position,true);
         }
+
+
+        //计算离线玩家人数，如果全部离线，重置该table
+        int nextCountFlag=0;
         this.currentTurn=(this.currentTurn+1)%enterSession.size();
+        String nextUserId=(String)enterUserId.get(this.currentTurn);
+        while(userIdOffline(nextUserId)){
+            this.currentTurn=(this.currentTurn+1)%enterSession.size();
+            nextUserId=(String)enterUserId.get(this.currentTurn);
+            nextCountFlag++;
+            if(nextCountFlag==Table.MAX_POSITION){
+                break;
+            }
+        }
+        if(nextCountFlag==Table.MAX_POSITION){
+            System.out.println("table no players");
+        }
     }
     /**
      * 根据输入值改变table的小黑屋状态
@@ -277,6 +307,11 @@ public class Table {
     public void setBlackHouseValue(int position,boolean result){
         this.blackHouse.put(position,!result);
         this.currentTurn=(this.currentTurn+1)%enterSession.size();
+    }
+
+    public boolean hasSomeSuccess(){
+        boolean result=false;
+        return result;
     }
 }
 

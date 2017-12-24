@@ -329,7 +329,7 @@ var setTurnAngel=function (num) {
     document.getElementById("dice").style.cssText="transform: rotate(-"+angel+"deg);";
 };
 /**
- * 设置所有的小人的位置
+ * 设置所有的小人的位置，roomUserPosition为轨道上的位置
  * @param num 当前用户的需要改变的位置
  * @param userId 需要改变的userId
  */

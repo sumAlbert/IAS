@@ -159,7 +159,12 @@ public class PlayGame {
                     //判断游戏是否开始
                     if(tables.get(user.getTableId()).isGameStart()){
                         //如果游戏已经开始
-                        offLineUserIds.put(user.getUserId(),user.getTableId());
+                        List offlineUserId=tables.get(user.getTableId()).getOfflineUserId();
+                        offlineUserId.add(user.getUserId());
+                        if(tables.get(user.getTableId()).getEnterSession().size()==0){
+                            System.out.println("清理table:"+user.getTableId());
+                            tables.set(user.getTableId(),(new Table()));
+                        }
                     }
                     else{
                         //如果游戏没有开始
@@ -544,10 +549,12 @@ public class PlayGame {
             QuestionHandler questionHandler=new QuestionHandler(baseConnection);
 
             //获取问题的种类
+            List trace=table.getTracePosition();
             int roomUserPosition=table.getUserRoomPosition(users.get(session.getId()).getUserId());
-            int questionType=roomUserPosition+Integer.valueOf((String)jsonObject.get("angel"));
-            questionType=questionType%questionHandler.getTypeNum();
-
+            int newTracePosition=(int)trace.get(roomUserPosition)+Integer.valueOf((String)jsonObject.get("angel"));
+            newTracePosition=newTracePosition%10;
+            trace.set(roomUserPosition,newTracePosition);
+            int questionType=newTracePosition%questionHandler.getTypeNum();
 
             //获取问题
             Question question=(Question)questionHandler.selectSQL(questionType);

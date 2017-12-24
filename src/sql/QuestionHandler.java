@@ -49,7 +49,6 @@ public class QuestionHandler implements SqlHandler{
     public Object selectSQL(Object object) {
         //从问题类别中获取questionTypeId
         int questionTypeNum=(int)object;
-        questionTypeNum=questionTypeNum%(questionList.size());
         String questionTypeId=(String)questionList.get(questionTypeNum);
         int questionTypeNumMax=Integer.valueOf((String)questionMap.get(questionTypeId));
         Random random = new Random();
