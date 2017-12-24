@@ -150,6 +150,14 @@ var messageController=function (data) {
             selectAnswerHandler(JSONObject);
             break;
         }
+        case "turnAngelBlackHouse":{
+            //设置旋转角度
+            setTurnAngel(JSONObject.angel);
+            setTimeout(function () {
+                turnAngelBlackHouse(JSONObject);
+            },3000);
+            break;
+        }
         default:
             break;
     }
@@ -544,8 +552,26 @@ var selectAnswerHandler=function (jsonObject) {
     }
     docData.turnStart=false;
 };
+/**
+ * 关进房子以后的转盘的判断
+ * @param jsonObject
+ */
+var turnAngelBlackHouse=function (jsonObject) {
+    //设置是否离开小黑屋
+    if(jsonObject.outBlackHouse){
+        var positionId=getPosition(jsonObject.userId);
+        changeUserClose(positionId);
+    }
 
+    //设置轮次
+    docData.turnPosition=jsonObject.turn;
 
+    //开始下一轮
+    if(docData.turnPosition==getPosition()){
+        toast("请转动转盘~！");
+    }
+    docData.turnStart=false;
+};
 
 
 

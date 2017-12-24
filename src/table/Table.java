@@ -120,6 +120,12 @@ public class Table {
     public void setTracePosition(List tracePosition) {
         this.tracePosition = tracePosition;
     }
+    public Map getBlackHouse() {
+        return blackHouse;
+    }
+    public void setBlackHouse(Map blackHouse) {
+        this.blackHouse = blackHouse;
+    }
 
     /**
      * 将房间的状态信息转换成json字符串
@@ -248,7 +254,6 @@ public class Table {
         }
         return result;
     }
-
     /**
      * 选中答案以后的设置
      * @param position 选择答案的玩家的位置
@@ -262,6 +267,15 @@ public class Table {
         else{
             this.blackHouse.put(position,true);
         }
+        this.currentTurn=(this.currentTurn+1)%enterSession.size();
+    }
+    /**
+     * 根据输入值改变table的小黑屋状态
+     * @param position 桌面的位置id
+     * @param result 是否为偶数
+     */
+    public void setBlackHouseValue(int position,boolean result){
+        this.blackHouse.put(position,!result);
         this.currentTurn=(this.currentTurn+1)%enterSession.size();
     }
 }

@@ -429,6 +429,19 @@ public class PlayGame {
                 }
                 break;
             }
+            case "turnAngelBlackHouse":{
+                try {
+                    if(attachment!=null){
+                        for(int i=0;i<tables.get(tableId).getEnterSession().size();i++){
+                            Session session=(Session)tables.get(tableId).getEnterSession().get(i);
+                            session.getBasicRemote().sendText(attachment);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -520,27 +533,54 @@ public class PlayGame {
      */
     private static synchronized boolean turnCrane(Session session,JSONObject jsonObject){
         boolean result=false;
-        //配置QuestionHandler和获取table
-        QuestionHandler questionHandler=new QuestionHandler(baseConnection);
         Table table=tables.get(users.get(session.getId()).getTableId());
+        int userRoomPosition=table.getUserRoomPosition(users.get(session.getId()).getUserId());
+        Map blackHouse=table.getBlackHouse();
+        boolean isBlackHouse=(boolean)blackHouse.get(userRoomPosition);
+        if(!isBlackHouse){
+            //如果没有关在黑屋子里面
 
-        //获取问题的种类
-        int roomUserPosition=table.getUserRoomPosition(users.get(session.getId()).getUserId());
-        int questionType=roomUserPosition+Integer.valueOf((String)jsonObject.get("angel"));
-        questionType=questionType%questionHandler.getTypeNum();
-        System.out.println(questionType);
+            //配置QuestionHandler和获取table
+            QuestionHandler questionHandler=new QuestionHandler(baseConnection);
 
-        //获取问题
-        Question question=(Question)questionHandler.selectSQL(questionType);
-        Map jsonResultMap=new HashMap(16);
-        jsonResultMap.put("question",question);
-        jsonResultMap.put("commandBack","turnAngelResult");
-        jsonResultMap.put("angel",jsonObject.get("angel"));
-        jsonResultMap.put("userId",users.get(session.getId()).getUserId());
-        JSONObject jsonResultObject=JSONObject.fromObject(jsonResultMap);
-        System.out.println(jsonResultObject.toString());
-        String sendToTables=jsonResultObject.toString();
-        sendInfoAllTable(users.get(session.getId()).getTableId(),"turnAngelResult",sendToTables);
+            //获取问题的种类
+            int roomUserPosition=table.getUserRoomPosition(users.get(session.getId()).getUserId());
+            int questionType=roomUserPosition+Integer.valueOf((String)jsonObject.get("angel"));
+            questionType=questionType%questionHandler.getTypeNum();
+            System.out.println(questionType);
+
+            //获取问题
+            Question question=(Question)questionHandler.selectSQL(questionType);
+            Map jsonResultMap=new HashMap(16);
+            jsonResultMap.put("question",question);
+            jsonResultMap.put("commandBack","turnAngelResult");
+            jsonResultMap.put("angel",jsonObject.get("angel"));
+            jsonResultMap.put("userId",users.get(session.getId()).getUserId());
+            JSONObject jsonResultObject=JSONObject.fromObject(jsonResultMap);
+            System.out.println(jsonResultObject.toString());
+            String sendToTables=jsonResultObject.toString();
+            sendInfoAllTable(users.get(session.getId()).getTableId(),"turnAngelResult",sendToTables);
+        }
+        else{
+            //如果关在黑屋子里面
+            String angel=(String)jsonObject.get("angel");
+            int angelInteger=Integer.valueOf(angel);
+            boolean outBlackHouse=false;
+            if(angelInteger%2==0){
+                outBlackHouse=true;
+            }
+            table.setBlackHouseValue(userRoomPosition,outBlackHouse);
+            Map jsonResultMap=new HashMap(16);
+            jsonResultMap.put("commandBack","turnAngelBlackHouse");
+            jsonResultMap.put("angel",jsonObject.get("angel"));
+            jsonResultMap.put("userId",users.get(session.getId()).getUserId());
+            jsonResultMap.put("outBlackHouse",outBlackHouse);
+            jsonResultMap.put("turn",table.getCurrentTurn());
+            JSONObject jsonResultObject=JSONObject.fromObject(jsonResultMap);
+            System.out.println(jsonResultObject.toString());
+            String sendToTables=jsonResultObject.toString();
+            sendInfoAllTable(users.get(session.getId()).getTableId(),"turnAngelBlackHouse",sendToTables);
+        }
         return result;
     }
 
