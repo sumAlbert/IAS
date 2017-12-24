@@ -160,6 +160,11 @@ var messageController=function (data) {
             },3000);
             break;
         }
+        case "success":{
+            //有人获胜
+            someoneSuccess(JSONObject);
+            break;
+        }
         default:
             break;
     }
@@ -620,8 +625,18 @@ var stopCountDown=function () {
     var nowTime=0;
     document.getElementById("countDown").innerHTML=nowTime+"s";
 };
-
-
+/**
+ * 有人分数达到6分
+ * @param jsonObject
+ */
+var someoneSuccess=function (jsonObject) {
+    var positionId=jsonObject.positionId;
+    var positionName=["一","二","三","四"];
+    document.getElementById("mainBoard-info1").innerHTML="恭喜玩家"+positionName[positionId]+"获得胜利";
+    document.getElementById("mainBoard-info2").innerHTML="(^з^)-☆";
+    document.getElementById("mainBoard-infoBoard").style.cssText="display:block";
+    document.getElementById("mainBoard-question").style.cssText="display:none";
+};
 
 
 

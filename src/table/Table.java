@@ -308,10 +308,31 @@ public class Table {
         this.blackHouse.put(position,!result);
         this.currentTurn=(this.currentTurn+1)%enterSession.size();
     }
-
-    public boolean hasSomeSuccess(){
-        boolean result=false;
+    /**
+     * 是否有成功的人
+     * @return 成功人的编号
+     */
+    public Integer hasSomeSuccess(){
+        Integer result=null;
+        for(int i=0;i<this.scores.size();i++){
+            if((int)this.scores.get(i)==6){
+                result=i;
+            }
+        }
         return result;
+    }
+    /**
+     * 重新开始一句
+     */
+    public void againPlay(){
+        this.state=STATE_WAITING;
+        this.prepareSession=new ArrayList<Session>();
+        this.offlineUserId=new ArrayList();
+        this.gameStart=false;
+        this.currentTurn=0;
+        this.initBlack();
+        this.initTrace();
+        this.initScores();
     }
 }
 

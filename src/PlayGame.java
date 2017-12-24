@@ -600,22 +600,35 @@ public class PlayGame {
     private static synchronized boolean selectAnswer(Session session,JSONObject jsonObject){
         boolean result=false;
         Table table=tables.get((int)jsonObject.get("tableId"));
-        boolean answerResult=(boolean)jsonObject.get("result");
-        int answer=(int)jsonObject.get("answer");
-        User user=users.get(session.getId());
-        int positionId=table.getUserRoomPosition(user.getUserId());
+        Integer someSuccess=table.hasSomeSuccess();
+        if(someSuccess==null){
+            boolean answerResult=(boolean)jsonObject.get("result");
+            int answer=(int)jsonObject.get("answer");
+            User user=users.get(session.getId());
+            int positionId=table.getUserRoomPosition(user.getUserId());
 
-        table.setSelectedAnswer(positionId,answerResult);
-        HashMap jsonBackResult=new HashMap(16);
-        jsonBackResult.put("commandBack","selectResult");
-        jsonBackResult.put("userId",user.getUserId());
-        jsonBackResult.put("scores",table.getScores());
-        jsonBackResult.put("result",answerResult);
-        jsonBackResult.put("answer",answer);
-        jsonBackResult.put("turn",table.getCurrentTurn());
-        JSONObject jsonBackObject=JSONObject.fromObject(jsonBackResult);
-        System.out.println(jsonBackObject.toString());
-        sendInfoAllTable(users.get(session.getId()).getTableId(),"selectAnswer",jsonBackObject.toString());
-        return result;
+            table.setSelectedAnswer(positionId,answerResult);
+            HashMap jsonBackResult=new HashMap(16);
+            jsonBackResult.put("commandBack","selectResult");
+            jsonBackResult.put("userId",user.getUserId());
+            jsonBackResult.put("scores",table.getScores());
+            jsonBackResult.put("result",answerResult);
+            jsonBackResult.put("answer",answer);
+            jsonBackResult.put("turn",table.getCurrentTurn());
+            JSONObject jsonBackObject=JSONObject.fromObject(jsonBackResult);
+            System.out.println(jsonBackObject.toString());
+            sendInfoAllTable(users.get(session.getId()).getTableId(),"selectAnswer",jsonBackObject.toString());
+            return result;
+        }
+        else{
+            table.againPlay();
+            HashMap jsonBackResult=new HashMap(16);
+            jsonBackResult.put("commandBack","success");
+            jsonBackResult.put("positionId",String.valueOf(someSuccess));
+            JSONObject jsonBackObject=JSONObject.fromObject(jsonBackResult);
+            System.out.println(jsonBackObject.toString());
+            sendInfoAllTable(users.get(session.getId()).getTableId(),"success",jsonBackObject.toString());
+            return result;
+        }
     }
 }
