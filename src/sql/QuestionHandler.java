@@ -8,10 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author 98267
@@ -33,7 +30,17 @@ public class QuestionHandler implements SqlHandler{
 
     @Override
     public boolean insertSQL(Object object) {
-        return false;
+        boolean result=false;
+        Question question=(Question) object;
+        Connection connection=baseConnection.getConnection();
+        try (Statement statement = connection.createStatement()) {
+            String sqlStr = "insert into questions values (\"" + question.getQuestionId() + "\",\"" + question.getQuestionInfo() + "\",\"" + question.getQuestionType() + "\",\"" + question.getAnswerA() + "\",\""+ question.getAnswerB()+"\",\""+ question.getAnswerC()+"\",\""+ question.getAnswerD()+"\",\""+ question.getAnswerRight()+"\")";
+            statement.execute(sqlStr);
+            result=true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @Override
@@ -136,5 +143,43 @@ public class QuestionHandler implements SqlHandler{
             e.printStackTrace();
         }
         return questions;
+    }
+
+    /**
+     * 根据questionId列表删除问题
+     * @param questionsId 问题id列表
+     */
+    public void deleteUsersId(List questionsId){
+        Connection connection=baseConnection.getConnection();
+        try (Statement statement = connection.createStatement()) {
+            for(int i=0;i<questionsId.size();i++){
+                String questionId=(String)questionsId.get(i);
+                String sqlStr = "delete from questions where questionId = '"+questionId+"'";
+                statement.execute(sqlStr);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 根据userId修改用户数据
+     * @param users 用户数据列表
+     */
+    public void updateQuestionsId(List users){
+        Connection connection=baseConnection.getConnection();
+        try (Statement statement = connection.createStatement()) {
+            for(int i=0;i<users.size();i++){
+                Map user=(Map)users.get(i);
+                String attribute=(String)user.get("attribute");
+                String cellInfo=(String)user.get("cellInfo");
+                String questionId=(String)user.get("userId");
+                String sqlStr = "update questions set "+attribute+" = '"+cellInfo+"' where questionId = '"+questionId+"'";
+                System.out.println(sqlStr);
+                statement.execute(sqlStr);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

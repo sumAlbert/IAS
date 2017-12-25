@@ -105,6 +105,7 @@ input {
   font-family: hkwwtjW5;
   font-size: 1.25em;
   margin: 0 .5em 0;
+  cursor: pointer;
 }
 .mainControl-button:last-child {
   margin: 0 3em 0 0;

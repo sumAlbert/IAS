@@ -10,15 +10,20 @@ docData={
         [],
         ["问题ID","问题","问题种类","答案1","答案2","答案3","答案4","正确答案"]
     ],
+    tableHeaderAttribute:[
+        ["userId","nickname","userAccount","pw"],
+        [],
+        ["questionId","questionInfo","questionType","answerA","answerB","answerC","answerD","answerRight"]
+    ],
 
     //operator data
     tableModel:0,//0--玩家管理，1--游戏管理，2--题库管理
     clickNum:[],//保存哪些行被选中
-    clickCell:[]//保存修改过哪些行的数据
+    clickCell:[],//保存修改过哪些行的数据
+    addNum:0//增加了多少条记录
 
 };
-// var URL="192.168.1.100";
-var URL="localhost";
+
 
 
 
@@ -27,11 +32,23 @@ var URL="localhost";
  * 初始化当前界面
  */
 var init=function () {
+    verifyId();
     getTableData();
+
 
     //点击删除按钮
     document.getElementById("deleteButton").addEventListener("click",function () {
         deleteClick();
+    });
+
+    //点击增加按钮
+    document.getElementById("addButton").addEventListener("click",function () {
+        addClick();
+    });
+
+    //点击保存按钮
+    document.getElementById("saveButton").addEventListener("click",function () {
+        saveClick();
     });
 
     //点击玩家管理
@@ -115,6 +132,8 @@ var showByTable=function () {
 };
 
 
+
+
 //ajax回调函数处理
 var getTableDataHandler=function (responseText) {
     var jsonObject=JSON.parse(responseText);
@@ -123,6 +142,7 @@ var getTableDataHandler=function (responseText) {
             docData.table=[];
             docData.clickNum=[];
             docData.clickCell=[];
+            docData.addNum=0;
             var users=jsonObject.users;
             for(var i=0;i<users.length;i++){
                 var user=[];
@@ -140,6 +160,7 @@ var getTableDataHandler=function (responseText) {
             docData.table=[];
             docData.clickNum=[];
             docData.clickCell=[];
+            docData.addNum=0;
             var questions=jsonObject.questions;
             console.log(questions);
             for(var i=0;i<questions.length;i++){
@@ -162,6 +183,21 @@ var getTableDataHandler=function (responseText) {
             break;
     }
     showByTable();
+};
+
+var deleteDataHandler=function () {
+    getTableData();
+};
+
+var saveDataHandler=function () {
+    getTableData();
+};
+
+var verifyHandler=function (data) {
+    console.log(data);
+    if(data=="false"){
+        window.location.href="http://"+URL+":8080/login.html";
+    }
 };
 
 
@@ -187,7 +223,6 @@ var tableCellClick=function (i,j) {
         //其他列
         var handDom={i:i,j:j};
         docData.clickCell.push(handDom);
-        console.log(docData.clickCell);
     }
 };
 
@@ -224,15 +259,173 @@ var getTableData=function () {
  * 点击删除按钮
  */
 var deleteClick=function () {
+    var sendInfo={};
     var deleteItems=[];
+    for(var i=0;i<docData.clickNum.length;i++){
+        if(docData.clickNum[i]){
+            deleteItems.push(docData.table[i][0]);
+        }
+    }
+    sendInfo.deleteItems=deleteItems;
     switch (docData.tableModel){
-        case "0":{
-            console.log(0);
+        case 0:{
+            sendInfo.deleteTable="users";
+            var JSONstr=JSON.stringify(sendInfo);
+            var xhr=new XMLHttpRequest();
+            xhr.open("post","http://"+URL+":8080/BackManager");
+            xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
+            xhr.onreadystatechange=function () {
+                if(xhr.readyState===4){
+                    if(xhr.status===200){
+                        deleteDataHandler();
+                    }
+                }
+            };
+            xhr.send("command=deleteUsers&data="+JSONstr);
+            break;
+        }
+        case 2:{
+            sendInfo.deleteTable="question";
+            var JSONstr=JSON.stringify(sendInfo);
+            console.log(JSONstr);
+            var xhr=new XMLHttpRequest();
+            xhr.open("post","http://"+URL+":8080/BackManager");
+            xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
+            xhr.onreadystatechange=function () {
+                if(xhr.readyState===4){
+                    if(xhr.status===200){
+                        deleteDataHandler();
+                    }
+                }
+            };
+            xhr.send("command=deleteQuestion&data="+JSONstr);
             break;
         }
         default:
             break;
     }
+};
+
+/**
+ * 点击增加按钮
+ */
+var addClick=function () {
+    var cellNum=0;
+    switch (docData.tableModel){
+        case 0:{
+            cellNum=4;
+            break;
+        }
+        case 2:{
+            cellNum=8;
+            break;
+        }
+        default:
+            break;
+    }
+    var tableDom=document.getElementById("table");
+    var trDom=document.createElement("tr");
+    for(var j=0;j<=cellNum;j++){
+        if(j==0){
+            var tdDom=document.createElement("td");
+            tdDom.setAttribute("id","add_r"+docData.addNum+"c"+j);
+            tdDom.className="tdUnclick";
+            tdDom.innerHTML="";
+            trDom.append(tdDom);
+        }
+        else{
+            var tdDom=document.createElement("td");
+            tdDom.setAttribute("id","add_r"+docData.addNum+"c"+j);
+            tdDom.innerHTML="";
+            tdDom.setAttribute("contenteditable","true");
+            trDom.append(tdDom);
+        }
+    }
+    tableDom.append(trDom);
+    docData.addNum=docData.addNum+1;
+};
+
+/**
+ * 点击保存按钮
+ */
+var saveClick=function () {
+
+    var updatePart=[];
+    for(var i=0;i<docData.clickCell.length;i++){
+        var updateItemDoc=docData.clickCell[i];
+        if(updateItemDoc.j-0>1){
+            var attribute=docData.tableHeaderAttribute[docData.tableModel][updateItemDoc.j-1];
+            var cellInfo=document.getElementById("r"+updateItemDoc.i+"c"+updateItemDoc.j).innerHTML;
+            var userId=docData.table[updateItemDoc.i][0];
+            if(attribute==="pw"){
+                cellInfo=hex_sha1(cellInfo);
+            }
+            var updateItem={attribute:attribute,cellInfo:cellInfo,userId:userId};
+            updatePart.push(updateItem);
+        }
+    }
+
+    var addPart=[];
+    for(var i=0;i<docData.addNum;i++){
+        var addItem=[];
+        for(var j=0;j<=docData.tableHeaderAttribute[docData.tableModel].length;j++){
+            if(j>1){
+                var cellInfo=document.getElementById("add_r"+i+"c"+j).innerHTML;
+                if(j===4&&docData.tableModel===0){
+                    cellInfo=hex_sha1(cellInfo);
+                }
+                addItem.push(cellInfo);
+            }
+        }
+        addPart.push(addItem);
+    }
+
+    var sendInfo={
+        updatePart:updatePart,
+        addPart:addPart
+    };
+
+    var JSONstr=JSON.stringify(sendInfo);
+    var xhr=new XMLHttpRequest();
+    xhr.open("post","http://"+URL+":8080/BackManager");
+    xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;charset=UTF-8");
+    xhr.onreadystatechange=function () {
+        if(xhr.readyState===4){
+            if(xhr.status===200){
+                saveDataHandler();
+            }
+        }
+    };
+    switch (docData.tableModel){
+        case 0:{
+            console.log(JSONstr);
+            xhr.send("command=saveUser&data="+JSONstr);
+            break;
+        }
+        case 2:{
+            xhr.send("command=saveQuestion&data="+JSONstr);
+            break;
+        }
+        default:
+            break;
+    }
+};
+
+/**
+ * 验证当前用户的身份
+ */
+var verifyId=function () {
+    var xhr=new XMLHttpRequest();
+    xhr.open("post","http://"+URL+":8080/BackManager");
+    xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
+    xhr.onreadystatechange=function () {
+        if(xhr.readyState===4){
+            if(xhr.status===200){
+                verifyHandler(xhr.responseText);
+            }
+        }
+    };
+    xhr.send("command=verify");
 };
 
 

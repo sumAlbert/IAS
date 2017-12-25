@@ -39,14 +39,19 @@ public class Login extends HttpServlet {
         user.setUserAccount(account);
         user.setPw(pw);
 
+
         boolean result=(boolean)userSqlHandler.selectSQL(user);
         logger.info(String.valueOf(result));
         HttpSession httpSession=req.getSession();
         httpSession.setAttribute("user",user);
 
+        boolean isManager=(boolean)userSqlHandler.isManager(user);
+        System.out.println(isManager);
+
         //将ajax需要的信息返回
         Map map=new HashMap(16);
         map.put("result",result);
+        map.put("isManager",isManager);
         JSONObject jsonObject=JSONObject.fromObject(map);
         String jsonStr=jsonObject.toString();
         PrintWriter printWriter=resp.getWriter();
