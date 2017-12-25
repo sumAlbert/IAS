@@ -226,11 +226,22 @@ public class PlayGame {
                     }
                     break;
                 }
-                users.get(session.getId()).setPlayGameCurrentPage(User.CURRENTPAGE_PANEL);
-                users.get(session.getId()).setTableId(tableId);
+                User user=users.get(session.getId());
+                if(user!=null){
+                    user.setPlayGameCurrentPage(User.CURRENTPAGE_PANEL);
+                    user.setTableId(tableId);
+                }
+                else{
+                    try {
+                        session.getBasicRemote().sendText("{\"commandBack\":\"roomFull\"}");
+                        return false;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 Table table=tables.get(tableId);
                 //当table中没有加入的userId
-                if(!table.userIdExisted(users.get(session.getId()).getUserId())){
+                if(user!=null&&!table.userIdExisted(user.getUserId())){
                     try {
                         session.getBasicRemote().sendText("{\"commandBack\":\"roomFull\"}");
                         break;
@@ -327,6 +338,7 @@ public class PlayGame {
                 backResultMap.put("commandBack","updateTableInfo");
                 backResultMap.put("data",backResultList);
                 JSONObject backResultJson=JSONObject.fromObject(backResultMap);
+                System.out.println(backResultJson.toString());
                 try {
                     for(int i=0;i<gameLobbys.size();i++){
                         String sessionId=gameLobbys.get(i);
@@ -435,6 +447,19 @@ public class PlayGame {
                 break;
             }
             case "turnAngelBlackHouse":{
+                try {
+                    if(attachment!=null){
+                        for(int i=0;i<tables.get(tableId).getEnterSession().size();i++){
+                            Session session=(Session)tables.get(tableId).getEnterSession().get(i);
+                            session.getBasicRemote().sendText(attachment);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            case "success":{
                 try {
                     if(attachment!=null){
                         for(int i=0;i<tables.get(tableId).getEnterSession().size();i++){
@@ -600,14 +625,15 @@ public class PlayGame {
     private static synchronized boolean selectAnswer(Session session,JSONObject jsonObject){
         boolean result=false;
         Table table=tables.get((int)jsonObject.get("tableId"));
-        Integer someSuccess=table.hasSomeSuccess();
-        if(someSuccess==null){
+
             boolean answerResult=(boolean)jsonObject.get("result");
             int answer=(int)jsonObject.get("answer");
             User user=users.get(session.getId());
             int positionId=table.getUserRoomPosition(user.getUserId());
 
             table.setSelectedAnswer(positionId,answerResult);
+        Integer someSuccess=table.hasSomeSuccess();
+        if(someSuccess==null){
             HashMap jsonBackResult=new HashMap(16);
             jsonBackResult.put("commandBack","selectResult");
             jsonBackResult.put("userId",user.getUserId());

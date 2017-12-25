@@ -63,7 +63,7 @@ var docData= {
     answer:false,
     startTimeDown:{}
 };
-var URL="192.168.1.102";
+var URL="172.31.211.36";
 // var URL="localhost";
 
 //判断当前浏览器是否支持WebSocket
@@ -107,6 +107,7 @@ websocket.onclose = function(){
  */
 var messageController=function (data) {
     var JSONObject=JSON.parse(data);
+    console.log(JSONObject);
     switch (JSONObject["commandBack"]){
         case "exit":{
             exitHandler();
@@ -632,10 +633,48 @@ var stopCountDown=function () {
 var someoneSuccess=function (jsonObject) {
     var positionId=jsonObject.positionId;
     var positionName=["一","二","三","四"];
+    stopCountDown();
     document.getElementById("mainBoard-info1").innerHTML="恭喜玩家"+positionName[positionId]+"获得胜利";
     document.getElementById("mainBoard-info2").innerHTML="(^з^)-☆";
     document.getElementById("mainBoard-infoBoard").style.cssText="display:block";
     document.getElementById("mainBoard-question").style.cssText="display:none";
+    toast("请重新准备~!");
+    initWithData();
+};
+/**
+ * 保留数据地初始化
+ */
+var initWithData=function () {
+    document.getElementById("dice").style.cssText="transform: rotate(0deg);transition: none;";
+    var roomUserIds=docData.roomUserIds;
+    var roomUserId=docData.roomUserId;
+    var turnAngel=docData.turnAngel;
+    docData= {
+        roomIdError:999999,
+        maxMemberPerRoom: 4,
+        currentPoint: 2,
+        roomUserIds:[],
+        roomUserPosition:[0,0,0,0],
+        roomUserClose:[false,false,false,false],
+        roomUserId:"",
+        roomUserPrepare: false,
+        gameStart:false,
+        turnPosition: 0,
+        turnAngel: 0,
+        turnStart: false,
+        countDownStart: false,
+        questionInfo:{},
+        answer:false,
+        startTimeDown:{}
+    };
+    docData.roomUserId=roomUserId;
+    docData.roomUserIds=roomUserIds;
+    docData.turnAngel=turnAngel;
+    var cartoonIds=["personRed","personYellow","personGreen","personBlue"];
+    for(var i=0;i<4;i++){
+        document.getElementById("mainBlackHouse-cartoonPerson"+i).style.opacity="0";
+        document.getElementById(cartoonIds[i]).style.cssText="opacity: 1;"
+    }
 };
 
 

@@ -315,7 +315,7 @@ public class Table {
     public Integer hasSomeSuccess(){
         Integer result=null;
         for(int i=0;i<this.scores.size();i++){
-            if((int)this.scores.get(i)==6){
+            if((int)this.scores.get(i)==1){
                 result=i;
             }
         }

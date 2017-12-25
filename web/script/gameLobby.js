@@ -9,7 +9,7 @@ var docData={
     tableIsChanging: false,
     tableInfo:[]
 };
-var URL="192.168.1.102";
+var URL="172.31.211.36";
 // var URL="localhost";
 
 //判断当前浏览器是否支持WebSocket
@@ -59,6 +59,7 @@ var messageController=function (data) {
         }
         case "updateTableInfo":{
             docData.tableInfo=JSONObject["data"];
+            console.log(docData);
             upgradePage();
             break;
         }
@@ -111,12 +112,14 @@ var toast=function (info) {
  */
 var turnPage=function (pageNum) {
     //如果页码与当前页码一致，直接return
-    if(pageNum===docData.currentPage){
-        docData.tableIsChanging=false;
+    if(pageNum==docData.currentPage){
+        setTimeout(function () {
+            docData.tableIsChanging=false;
+        },500);
         return;
     }
     //如果跳转的页码大于当前页码，则向左，否则向右
-    var direction=(pageNum-0)>docData.currentPage?"left":"right";
+    var direction=pageNum-docData.currentPage>0?"left":"right";
     var hiddenTablePanel=(docData.showTablePanel+1)%2;
     document.getElementsByClassName("mainPage-activePage")[0].className="mainPage-normalPage";
     document.getElementsByClassName("mainPage-normalPage")[pageNum-1].className="mainPage-normalPage mainPage-activePage";
@@ -129,8 +132,9 @@ var turnPage=function (pageNum) {
                 break;
             }
             case '1':{
+                console.log(8*(docData.currentPage-1)+i);
                 document.getElementById("mainTablePanel"+hiddenTablePanel).children[i].className="mainTable mainTable-prepare";
-                document.getElementById("mainTablePanel"+hiddenTablePanel).children[i].children[1].innerHTML=docData.tableInfo[8*(docData.currentPage-1)+i].prepareNum+"\""+docData.tableInfo[8*(docData.currentPage-1)+i].enterNum;
+                document.getElementById("mainTablePanel"+hiddenTablePanel).children[i].children[1].innerHTML=docData.tableInfo[8*(docData.currentPage-1)+i].prepareNum+"\\"+docData.tableInfo[8*(docData.currentPage-1)+i].enterNum;
                 break;
             }
             case '2':{
@@ -149,14 +153,13 @@ var turnPage=function (pageNum) {
             setTimeout(function () {
                 document.getElementById("mainTablePanel"+hiddenTablePanel).style.cssText="left: 0%;";
                 document.getElementById("mainTablePanel"+docData.showTablePanel).style.cssText="left: -100%;";
-            },0);
+            },100);
             setTimeout(function () {
                 docData.showTablePanel=hiddenTablePanel;
                 docData.currentPage=pageNum;
                 docData.tableIsChanging=false;
-            },1100);
+            },1300);
             break;
-
         }
         case "right":{
             document.getElementById("mainTablePanel"+hiddenTablePanel).style.cssText="transition: none;left: -100%;";
@@ -164,12 +167,12 @@ var turnPage=function (pageNum) {
             setTimeout(function () {
                 document.getElementById("mainTablePanel"+hiddenTablePanel).style.cssText="left: 0%;";
                 document.getElementById("mainTablePanel"+docData.showTablePanel).style.cssText="left: 100%;";
-            },0);
+            },100);
             setTimeout(function () {
                 docData.showTablePanel=hiddenTablePanel;
                 docData.currentPage=pageNum;
                 docData.tableIsChanging=false;
-            },1100);
+            },1300);
             break;
         }
         default:
@@ -221,7 +224,9 @@ var init=function () {
                 turnPage(docData.currentPage-1);
             }
             else{
-                docData.tableIsChanging=false;
+                setTimeout(function () {
+                    docData.tableIsChanging=false;
+                },500);
             }
         }
     });
@@ -232,7 +237,9 @@ var init=function () {
                 turnPage(docData.currentPage+1);
             }
             else{
-                docData.tableIsChanging=false;
+                setTimeout(function () {
+                    docData.tableIsChanging=false;
+                },500);
             }
         }
     });

@@ -1,7 +1,7 @@
 var docData={
     isLogin:true
 };
-var URL="192.168.1.102";
+var URL="172.31.211.36";
 // var URL="localhost";
 
 /**
