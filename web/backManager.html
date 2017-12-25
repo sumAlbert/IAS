@@ -12,21 +12,21 @@
     <div class="mainContent">
         <div class="mainHeader">后台管理系统</div>
         <div class="mainControl">
-            <div class="mainControl-button">增加</div>
-            <div class="mainControl-button">删除</div>
-            <div class="mainControl-button">修改</div>
+            <div class="mainControl-button" id="addButton">增加</div>
+            <div class="mainControl-button" id="deleteButton">删除</div>
+            <div class="mainControl-button" id="upgradeButton">修改</div>
         </div>
         <div class="mainTable">
             <div class="mainTable-menus">
-                <div class="mainTable-menu">玩家管理</div>
-                <div class="mainTable-menu">游戏管理</div>
-                <div class="mainTable-menu">题库管理</div>
+                <div class="mainTable-menu" id="mainTable-menu0">玩家管理</div>
+                <div class="mainTable-menu" id="mainTable-menu1">游戏管理</div>
+                <div class="mainTable-menu" id="mainTable-menu2">题库管理</div>
             </div>
             <div class="mainTable-show">
                 <div class="mainTable-box">
-                    <table  cellspacing="0px">
+                    <table  cellspacing="0px" id="table">
                         <tr>
-                            <th>123</th><th>123</th>
+                            <th contenteditable="true">123</th><th>123</th>
                         </tr>
                         <tr>
                             <td>234</td><td>234</td><td>234</td>
@@ -93,4 +93,6 @@
 </div>
 <div class="mainHidden"></div>
 </body>
+<script src="script/backManager.js"></script>
+<script src="script/sha1.js"></script>
 </html>

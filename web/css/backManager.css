@@ -54,7 +54,7 @@ input {
   display: none;
 }
 .mainContent {
-  max-width: 56em;
+  max-width: 66em;
   width: 100%;
   height: 100%;
   margin: 0 auto;
@@ -154,24 +154,54 @@ tr:nth-child(2n+0) {
 }
 tr > td:first-child {
   border-left: 1px dashed #bbb;
+  min-width: 2.3em;
+  max-width: 2.3em;
+  opacity: 1;
+  padding: .3em .5em;
+}
+tr > th:first-child {
+  min-width: 2.7em;
+  max-width: 2.7em;
+  opacity: 0;
+  padding: .3em .5em;
 }
 th {
   font-weight: 500;
-  font-size: 1.25em;
-  padding: .3em 1em;
+  font-size: 1.1em;
+  padding: .5em 1em;
   text-align: center;
   min-width: 5em;
   border-right: 1px dashed #bbb;
-  font-family: hkwwtjW5;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: auto;
+  max-width: 20em;
+  outline: none;
 }
 td {
   font-weight: 500;
-  font-size: 1.25em;
-  padding: .3em 1em;
+  font-size: 1.1em;
+  padding: .5em 1em;
   text-align: center;
   min-width: 5em;
   border-right: 1px dashed #bbb;
-  font-family: hkwwtjW5;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: auto;
+  max-width: 20em;
+  outline: none;
+}
+th::-webkit-scrollbar:horizontal {
+  height: 0;
+}
+td::-webkit-scrollbar:horizontal {
+  height: 0;
+}
+.tdClick {
+  background: url("../image/backManager/u15.png") center center no-repeat;
+  background-size: 40% 70%;
+}
+.tdUnclick {
+  background: url("../image/backManager/u17.png") center center no-repeat;
+  background-size: 40% 70%;
 }

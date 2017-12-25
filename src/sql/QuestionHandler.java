@@ -2,6 +2,7 @@ package sql;
 
 import org.junit.runner.Result;
 import question.Question;
+import user.User;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -99,5 +100,41 @@ public class QuestionHandler implements SqlHandler{
 
     public int getTypeNum(){
         return questionList.size();
+    }
+
+    /**
+     * 获取问题列表
+     * @return
+     */
+    public List selectAllSQL(){
+        List questions=new ArrayList();
+        Connection connection=baseConnection.getConnection();
+        try (Statement statement = connection.createStatement()) {
+            String sqlStr = "select * from questions";
+            ResultSet resultSet = statement.executeQuery(sqlStr);
+            while (resultSet.next()){
+                Question question=new Question();
+                String questionId=resultSet.getString("questionId");
+                String questionInfo=resultSet.getString("questionInfo");
+                String questionType=resultSet.getString("questionType");
+                String answerA=resultSet.getString("answerA");
+                String answerB=resultSet.getString("answerB");
+                String answerC=resultSet.getString("answerC");
+                String answerD=resultSet.getString("answerD");
+                String answerRight=resultSet.getString("answerRight");
+                question.setQuestionInfo(questionInfo);
+                question.setQuestionType(questionType);
+                question.setQuestionId(questionId);
+                question.setAnswerA(answerA);
+                question.setAnswerB(answerB);
+                question.setAnswerC(answerC);
+                question.setAnswerD(answerD);
+                question.setAnswerRight(answerRight);
+                questions.add(question);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return questions;
     }
 }

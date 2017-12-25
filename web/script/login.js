@@ -1,7 +1,7 @@
 var docData={
     isLogin:true
 };
-var URL="192.168.1.102";
+var URL="192.168.1.100";
 // var URL="localhost";
 
 /**
@@ -83,6 +83,7 @@ document.getElementById("submit").addEventListener("click",function () {
         var xhr=new XMLHttpRequest();
         xhr.open("post","http://"+URL+":8080/Login");
         xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
+        xhr.withCredentials = true;
         xhr.onreadystatechange=function () {
             if(xhr.readyState===4){
                 if(xhr.status===200){
@@ -103,6 +104,7 @@ document.getElementById("submit").addEventListener("click",function () {
         var xhr=new XMLHttpRequest();
         xhr.open("post","http://"+URL+":8080/Register");
         xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
+        xhr.withCredentials = true;
         xhr.onreadystatechange=function () {
             if(xhr.readyState===4){
                 if(xhr.status===200){

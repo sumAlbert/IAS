@@ -10,6 +10,8 @@ public class Question {
    private String answerC;
    private String answerD;
    private String answerRight;
+   private String questionType;
+   private String questionId;
 
    public Question(){
        super();
@@ -42,6 +44,12 @@ public class Question {
     public String getQuestionInfo() {
         return questionInfo;
     }
+    public String getQuestionType() {
+        return questionType;
+    }
+    public String getQuestionId() {
+        return questionId;
+    }
 
     public void setAnswerA(String answerA) {
         this.answerA = answerA;
@@ -60,5 +68,11 @@ public class Question {
     }
     public void setQuestionInfo(String questionInfo) {
         this.questionInfo = questionInfo;
+    }
+    public void setQuestionType(String questionType) {
+        this.questionType = questionType;
+    }
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
     }
 }

@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author 98267
@@ -63,5 +65,32 @@ public class UserSqlHandler implements SqlHandler {
         return result;
     }
 
+    /**
+     * 获取用户列表
+     * @return
+     */
+    public List selectAllSQL(){
+        List users=new ArrayList();
+        Connection connection=baseConnection.getConnection();
+        try (Statement statement = connection.createStatement()) {
+            String sqlStr = "select * from users";
+            ResultSet resultSet = statement.executeQuery(sqlStr);
+            while (resultSet.next()){
+                User user=new User();
+                String nickname=resultSet.getString("nickname");
+                String userId=resultSet.getString("userId");
+                String userAccount=resultSet.getString("userAccount");
+                String userPw=resultSet.getString("pw");
+                user.setUserId(userId);
+                user.setNickname(nickname);
+                user.setUserAccount(userAccount);
+                user.setPw(userPw);
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
 
 }

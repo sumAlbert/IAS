@@ -63,7 +63,7 @@ var docData= {
     answer:false,
     startTimeDown:{}
 };
-var URL="192.168.1.102";
+var URL="192.168.1.100";
 // var URL="localhost";
 
 //判断当前浏览器是否支持WebSocket
