@@ -22,8 +22,16 @@ input{margin: 0;padding: 0;outline: none;height: 100%;width: 100%;border: none;b
 .mainTable-menus{height: 100%;width: 6em;display: flex;flex-direction: column;justify-content: flex-start;align-items: center;font-family: hkwwtjW5;font-size: 1.25em;font-weight: 700;box-shadow: 1.05em 0 0 -1em hsla(0,0%,50%,.5);}
 .mainTable-menu{margin: 1.5em 0 0;cursor: pointer;user-select: none;}
 .mainTable-menu:first-child{margin: 3em 0 0;}
-.mainTable-show{display: flex;justify-content: center;align-items: center;flex: 1;height: 100%;}
-.mainTable-box{height: 90%;width: 90%;background: rgb(242,242,242);}
+.mainTable-show{display: flex;justify-content: center;align-items: center;width: calc(~"100% - 6em");height: 100%;}
+.mainTable-box{height: 90%;width: 90%;overflow: auto;}
+
+tr:nth-child(2n+1){background: transparent;}
+tr:nth-child(2n+0){background: white;}
+tr > td:first-child{border-left: 1px dashed #bbb;}
+th{font-weight: 500;font-size: 1.25em;padding: .3em 1em;text-align: center;min-width: 5em;border-right: 1px dashed #bbb;font-family: hkwwtjW5;cursor: pointer;}
+td{font-weight: 500;font-size: 1.25em;padding: .3em 1em;text-align: center;min-width: 5em;border-right: 1px dashed #bbb;font-family: hkwwtjW5;cursor: pointer;}
+
+
 
 
 

@@ -63,7 +63,7 @@ var docData= {
     answer:false,
     startTimeDown:{}
 };
-var URL="172.31.211.36";
+var URL="192.168.1.102";
 // var URL="localhost";
 
 //判断当前浏览器是否支持WebSocket
@@ -638,6 +638,7 @@ var someoneSuccess=function (jsonObject) {
     document.getElementById("mainBoard-info2").innerHTML="(^з^)-☆";
     document.getElementById("mainBoard-infoBoard").style.cssText="display:block";
     document.getElementById("mainBoard-question").style.cssText="display:none";
+    document.getElementsByClassName("mainRanking-playerScore")[positionId].innerHTML="6";
     toast("请重新准备~!");
     initWithData();
 };

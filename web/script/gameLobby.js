@@ -9,7 +9,7 @@ var docData={
     tableIsChanging: false,
     tableInfo:[]
 };
-var URL="172.31.211.36";
+var URL="192.168.1.102";
 // var URL="localhost";
 
 //判断当前浏览器是否支持WebSocket
@@ -120,6 +120,7 @@ var turnPage=function (pageNum) {
     }
     //如果跳转的页码大于当前页码，则向左，否则向右
     var direction=pageNum-docData.currentPage>0?"left":"right";
+    docData.currentPage=pageNum;
     var hiddenTablePanel=(docData.showTablePanel+1)%2;
     document.getElementsByClassName("mainPage-activePage")[0].className="mainPage-normalPage";
     document.getElementsByClassName("mainPage-normalPage")[pageNum-1].className="mainPage-normalPage mainPage-activePage";
