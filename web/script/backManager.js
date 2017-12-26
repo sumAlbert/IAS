@@ -35,7 +35,6 @@ var init=function () {
     verifyId();
     getTableData();
 
-
     //点击删除按钮
     document.getElementById("deleteButton").addEventListener("click",function () {
         deleteClick();
@@ -201,6 +200,7 @@ var verifyHandler=function (data) {
 };
 
 
+
 //绑定的函数
 /**
  * 点击表单的表格
@@ -361,23 +361,33 @@ var saveClick=function () {
                 cellInfo=hex_sha1(cellInfo);
             }
             var updateItem={attribute:attribute,cellInfo:cellInfo,userId:userId};
-            updatePart.push(updateItem);
+            console.log(updateItem.cellInfo);
+            console.log(updateItem.cellInfo.length);
+            if(updateItem.cellInfo.length!==0){
+                updatePart.push(updateItem);
+            }
         }
     }
 
     var addPart=[];
     for(var i=0;i<docData.addNum;i++){
         var addItem=[];
+        var flag=true;
         for(var j=0;j<=docData.tableHeaderAttribute[docData.tableModel].length;j++){
             if(j>1){
                 var cellInfo=document.getElementById("add_r"+i+"c"+j).innerHTML;
                 if(j===4&&docData.tableModel===0){
                     cellInfo=hex_sha1(cellInfo);
                 }
+                if(cellInfo.length===0){
+                    flag=false;
+                }
                 addItem.push(cellInfo);
             }
         }
-        addPart.push(addItem);
+        if(flag){
+            addPart.push(addItem);
+        }
     }
 
     var sendInfo={
@@ -427,7 +437,6 @@ var verifyId=function () {
     };
     xhr.send("command=verify");
 };
-
 
 init();
 

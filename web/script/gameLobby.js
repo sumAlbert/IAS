@@ -82,6 +82,8 @@ var exitHandler=function () {
 };
 
 
+
+
 //view控制
 /**
  * 弹出信息
