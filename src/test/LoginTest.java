@@ -8,7 +8,7 @@ import org.junit.After;
 * Login Tester. 
 * 
 * @author <Authors name> 
-* @since <pre>十二月 19, 2017</pre> 
+* @since <pre>十二月 28, 2017</pre> 
 * @version 1.0 
 */ 
 public class LoginTest { 
@@ -18,7 +18,7 @@ public void before() throws Exception {
 } 
 
 @After
-public void after() throws Exception { 
+public void after() throws Exception {
 } 
 
 /** 
