@@ -195,7 +195,7 @@ var saveDataHandler=function () {
 var verifyHandler=function (data) {
     console.log(data);
     if(data=="false"){
-        window.location.href="http://"+URL+":8080/login.html";
+        window.location.href="./login.html";
     }
 };
 
@@ -231,7 +231,7 @@ var tableCellClick=function (i,j) {
  */
 var getTableData=function () {
     var xhr=new XMLHttpRequest();
-    xhr.open("post","http://"+URL+":8080/BackManager");
+    xhr.open("post","http://"+URL+":"+PORT+"/BackManager");
     xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
     xhr.withCredentials = true;
     xhr.onreadystatechange=function () {
@@ -272,7 +272,7 @@ var deleteClick=function () {
             sendInfo.deleteTable="users";
             var JSONstr=JSON.stringify(sendInfo);
             var xhr=new XMLHttpRequest();
-            xhr.open("post","http://"+URL+":8080/BackManager");
+            xhr.open("post","http://"+URL+":"+PORT+"/BackManager");
             xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
             xhr.onreadystatechange=function () {
                 if(xhr.readyState===4){
@@ -289,7 +289,7 @@ var deleteClick=function () {
             var JSONstr=JSON.stringify(sendInfo);
             console.log(JSONstr);
             var xhr=new XMLHttpRequest();
-            xhr.open("post","http://"+URL+":8080/BackManager");
+            xhr.open("post","http://"+URL+":"+PORT+"/BackManager");
             xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
             xhr.onreadystatechange=function () {
                 if(xhr.readyState===4){
@@ -397,7 +397,7 @@ var saveClick=function () {
 
     var JSONstr=JSON.stringify(sendInfo);
     var xhr=new XMLHttpRequest();
-    xhr.open("post","http://"+URL+":8080/BackManager");
+    xhr.open("post","http://"+URL+":"+PORT+"/BackManager");
     xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;charset=UTF-8");
     xhr.onreadystatechange=function () {
         if(xhr.readyState===4){
@@ -426,7 +426,7 @@ var saveClick=function () {
  */
 var verifyId=function () {
     var xhr=new XMLHttpRequest();
-    xhr.open("post","http://"+URL+":8080/BackManager");
+    xhr.open("post","http://"+URL+":"+PORT+"/BackManager");
     xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
     xhr.onreadystatechange=function () {
         if(xhr.readyState===4){

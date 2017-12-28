@@ -80,9 +80,8 @@ document.getElementById("submit").addEventListener("click",function () {
     //ajax发送信息到后台
     if(docData.isLogin){
         var xhr=new XMLHttpRequest();
-        xhr.open("post","http://"+URL+":8080/Login");
+        xhr.open("post","http://"+URL+":"+PORT+"/Login");
         xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
-        xhr.withCredentials = true;
         xhr.onreadystatechange=function () {
             if(xhr.readyState===4){
                 if(xhr.status===200){
@@ -91,10 +90,10 @@ document.getElementById("submit").addEventListener("click",function () {
                     }
                     else{
                         if(JSON.parse(xhr.responseText).isManager){
-                            window.location.href="http://"+URL+":8080/backManager.html";
+                            window.location.href="./backManager.html";
                         }
                         else{
-                            window.location.href="http://"+URL+":8080/gameLobby.html";
+                            window.location.href="./gameLobby.html";
                         }
                     }
                 }
@@ -106,9 +105,8 @@ document.getElementById("submit").addEventListener("click",function () {
         xhr.send("account="+account+"&pw="+pw+"&name="+name);
     }else{
         var xhr=new XMLHttpRequest();
-        xhr.open("post","http://"+URL+":8080/Register");
+        xhr.open("post","http://"+URL+":/Register");
         xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
-        xhr.withCredentials = true;
         xhr.onreadystatechange=function () {
             if(xhr.readyState===4){
                 if(xhr.status===200){
@@ -116,7 +114,7 @@ document.getElementById("submit").addEventListener("click",function () {
                         toast("用户已存在，请重新注册~！");
                     }
                     else{
-                        window.location.href="http://"+URL+":8080/gameLobby.html";
+                        window.location.href="./gameLobby.html";
                     }
                 }
                 else{

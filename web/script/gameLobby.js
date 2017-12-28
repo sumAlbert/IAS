@@ -13,7 +13,7 @@ var docData={
 
 //判断当前浏览器是否支持WebSocket
 if('WebSocket' in window){
-    websocket = new WebSocket("ws://"+URL+":8080/playGame");
+    websocket = new WebSocket("ws://"+URL+":"+PORT+"/playGame");
 } else{
     alert('Not support websocket');
 }
@@ -77,7 +77,7 @@ var messageController=function (data) {
 var exitHandler=function () {
     toast("未登陆，请重新登陆~");
     setTimeout(function () {
-        window.location.href="http://"+URL+":8080/login.html";
+        window.location.href="./login.html";
     },2000);
 };
 
@@ -278,7 +278,7 @@ var upgradePage=function () {
 var enterRoom=function (JSONObject) {
     console.log(JSONObject);
     if(JSONObject.enterRoomResult){
-        window.location.href="http://"+URL+":8080/gamePanel.html?"+JSONObject.tableId;
+        window.location.href="./gamePanel.html?"+JSONObject.tableId;
     }
     else{
         toast("房间已满，请选择其他房间")

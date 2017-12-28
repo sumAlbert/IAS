@@ -67,7 +67,7 @@ var docData= {
 
 //判断当前浏览器是否支持WebSocket
 if('WebSocket' in window){
-    websocket = new WebSocket("ws://"+URL+":8080/playGame");
+    websocket = new WebSocket("ws://"+URL+":"+PORT+"/playGame");
 } else{
     alert('Not support websocket');
 }
@@ -176,7 +176,7 @@ var messageController=function (data) {
 var exitHandler=function () {
     toast("未登陆，请重新登陆~");
     setTimeout(function () {
-        window.location.href="http://"+URL+":8080/login.html";
+        window.location.href="./login.html";
     },2000);
 };
 
@@ -293,7 +293,7 @@ var backToLobby=function () {
     }
     else{
         setTimeout(function () {
-            window.location.href="http://"+URL+":8080/gameLobby.html";
+            window.location.href="./gameLobby.html";
         },1000);
     }
 };

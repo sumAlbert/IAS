@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body style="color: #666;">
+<div style="margin: 0 0 1em 0;">只针对httpServlet</div>
+<textarea placeholder="输入url" id="url" style="width: 40em;height: 5em;"></textarea><div style="margin: 0 0 1em 0;">例如：http://localhost:8080/Login  或者  http://118.25.19.81:80/Login</div>
+<textarea placeholder="输入发送的包" id="message" style="width: 40em;height: 5em;"></textarea><div style="margin: 0 0 1em 0;">例如：account=ll@qq.com&pw=123456</div>
+<button id="send" onclick="send()" style="margin: 0 0 1em 0;">send</button>
+<a href="./websocketTest.html" style="margin: 0 0 1em 0;"> 转换到websocket</a>
+<br>
+<input id="pw" placeholder="密码"/>
+<div>密码需要加密，加密结果：</div>
+<button onclick="changePw()">加密</button>
+<div id="pw-result"></div>
+</body>
+<script src="script/url.js"></script>
+<script src="script/sha1.js"></script>
+<script>
+    function send() {
+        var url=document.getElementById("url").value;
+        var message=document.getElementById("message").value;
+        var xhr=new XMLHttpRequest();
+        xhr.open("post",url);
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        xhr.onreadystatechange=function () {
+            if(xhr.readyState===4){
+                if(xhr.status===200){
+                    console.log(xhr.responseText);
+                }
+            }
+        };
+        xhr.send(message);
+    }
+    
+    function changePw() {
+        var pw_old=document.getElementById("pw").value;
+        var pw_new=hex_sha1(pw_old);
+        document.getElementById("pw-result").innerHTML=pw_new;
+    }
+</script>
+</html>

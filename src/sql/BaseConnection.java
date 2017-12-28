@@ -14,8 +14,8 @@ public class BaseConnection{
      * 数据库配置信息
      */
     private final static String USER="root";
-    private final static String PASS="123456";
-    private final static String DB_URL_PRE="jdbc:mysql://localhost:3306/";
+    private final static String PASS="";
+    private final static String DB_URL_PRE="jdbc:mysql://118.25.19.81:3306/";
     private final static String DB_URL_AFT="?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
     private Connection connection;
 
