@@ -56,6 +56,11 @@ var init=function () {
         getTableData();
     });
 
+    //点击游戏管理，软件测试入口
+    document.getElementById("mainTable-menu1").addEventListener("click",function () {
+        window.location.href="./httpServletTest.html";
+    });
+
     //点击题库管理
     document.getElementById("mainTable-menu2").addEventListener("click",function () {
         docData.tableModel=2;
