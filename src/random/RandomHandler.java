@@ -45,8 +45,8 @@ public class RandomHandler {
         return year+month+day+hour+minute+sec;
     }
     /**
-     * 获取一个小于10的随机整数数
-     * @return 一个小于10的随机整数
+     * 获取一个长度为length的字符串
+     * @return 一个长度为length的字符串
      */
     private String getRandom(int length){
         String base = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -59,7 +59,7 @@ public class RandomHandler {
         return sb.toString();
     }
     /**
-     * 获取固定长度的id(长度至少大于14)
+     * 获取固定长度的id
      * @param length id要求的长度
      * @return 唯一的id
      */
@@ -75,10 +75,10 @@ public class RandomHandler {
      * @param length 题目列表的大小
      * @return 题目的序号
      */
-    public int getQuestion(int length){
-        Random random = new Random();
-        int result=random.nextInt(length);
-        return result;
-    }
+//    public int getQuestion(int length){
+//        Random random = new Random();
+//        int result=random.nextInt(length);
+//        return result;
+//    }
 
 }

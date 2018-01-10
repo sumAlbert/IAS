@@ -18,6 +18,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class Login extends HttpServlet {
+    public Login(){
+        super();
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         super.doGet(req, resp);

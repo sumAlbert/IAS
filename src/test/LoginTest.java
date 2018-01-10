@@ -1,21 +1,27 @@
 package test;
 
-import org.junit.Test; 
-import org.junit.Before; 
-import org.junit.After; 
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
 
-/** 
+import org.apache.cactus.ServletTestCase;
+import org.apache.cactus.WebRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+/**
 * Login Tester. 
 * 
 * @author <Authors name> 
 * @since <pre>十二月 28, 2017</pre> 
 * @version 1.0 
 */ 
-public class LoginTest { 
+public class LoginTest extends ServletTestCase{
 
-@Before
-public void before() throws Exception { 
-} 
+    @Before
+public void beginValidUser(WebRequest webRequest) {
+        webRequest.addParameter("account","ll@qq.com");
+        webRequest.addParameter("pw","123456");
+    }
 
 @After
 public void after() throws Exception {
@@ -27,8 +33,9 @@ public void after() throws Exception {
 * 
 */ 
 @Test
-public void testDoGet() throws Exception { 
-//TODO: Test goes here... 
+public void testValidUser() throws Exception {
+//TODO: Test goes here...
+
 } 
 
 /** 

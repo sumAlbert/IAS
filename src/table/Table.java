@@ -57,7 +57,7 @@ public class Table {
      */
     private List scores=new ArrayList();
     /**
-     * 跑到上的位置
+     * 跑道上的位置
      */
     private List tracePosition=new ArrayList();
     /**
@@ -284,19 +284,21 @@ public class Table {
 
 
         //计算离线玩家人数，如果全部离线，重置该table
-        int nextCountFlag=0;
-        this.currentTurn=(this.currentTurn+1)%enterSession.size();
-        String nextUserId=(String)enterUserId.get(this.currentTurn);
-        while(userIdOffline(nextUserId)){
-            this.currentTurn=(this.currentTurn+1)%enterSession.size();
-            nextUserId=(String)enterUserId.get(this.currentTurn);
-            nextCountFlag++;
-            if(nextCountFlag==Table.MAX_POSITION){
-                break;
+        if(enterSession.size() != 0) {
+            int nextCountFlag = 0;
+            this.currentTurn = (this.currentTurn + 1) % enterSession.size();
+            String nextUserId = (String) enterUserId.get(this.currentTurn);
+            while (userIdOffline(nextUserId)) {
+                this.currentTurn = (this.currentTurn + 1) % enterSession.size();
+                nextUserId = (String) enterUserId.get(this.currentTurn);
+                nextCountFlag++;
+                if (nextCountFlag == Table.MAX_POSITION) {
+                    break;
+                }
             }
-        }
-        if(nextCountFlag==Table.MAX_POSITION){
-            System.out.println("table no players");
+            if (nextCountFlag == Table.MAX_POSITION) {
+                System.out.println("table no players");
+            }
         }
     }
     /**

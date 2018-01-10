@@ -76,6 +76,7 @@ public class QuestionHandler implements SqlHandler{
                 String answerD=resultSet.getString("answerD");
                 String answerRight=resultSet.getString("answerRight");
                 question=new Question(questionInfo,answerA,answerB,answerC,answerD,answerRight);
+                question.setQuestionType(resultSet.getString("questionType"));
             }
         } catch (SQLException e) {
             e.printStackTrace();

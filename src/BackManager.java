@@ -93,6 +93,7 @@ public class BackManager extends HttpServlet {
                 String data=req.getParameter("data");
                 RandomHandler randomHandler=new RandomHandler();
                 JSONObject jsonObject=JSONObject.fromObject(data);
+
                 //处理增加的元素
                 List addPart=(List)jsonObject.get("addPart");
                 if(addPart.size()!=0){
